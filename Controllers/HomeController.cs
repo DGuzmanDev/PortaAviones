@@ -18,11 +18,25 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Privacy()
+    public IActionResult Ingreso()
     {
         return View();
     }
 
+    public IActionResult Inventario()
+    {
+        return View();
+    }
+
+    public IActionResult Retiro()
+    {
+        return View();
+    }
+
+    public IActionResult DespegueAterrizaje()
+    {
+        return View();
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public async void ErrorHandler()

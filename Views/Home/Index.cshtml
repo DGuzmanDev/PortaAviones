@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row pb-4">
             <div id="ingreso" class="col-sm-5 offset-sm-1">
-                <a href="Ingreso" class="card">
+                <a class="card" asp-area="" asp-controller="Home" asp-action="Ingreso">
                     <div class="card-header">
                         <h3>Ingreso</h3>
                     </div>
@@ -16,7 +16,7 @@
                 </a>
             </div>
             <div id="retiro" class="col-sm-5">
-                <a href="Retiro" class="card">
+                <a class="card" asp-area="" asp-controller="Home" asp-action="Retiro">
                     <div class="card-header">
                         <h3>Retiro</h3>
                     </div>
@@ -27,23 +27,23 @@
             </div>
         </div>
         <div class="row">
-            <div id="raw" class="col-sm-5 offset-sm-1">
-                <a href="/raw" class="card">
+            <div id="despegue" class="col-sm-5 offset-sm-1">
+                <a class="card" asp-area="" asp-controller="Home" asp-action="DespegueAterrizaje">
                     <div class="card-header">
-                        <h3>Despegue</h3>
+                        <h3>Despegue y Aterrizaje</h3>
                     </div>
                     <div class="card-body p-0">
                         <img src="~/img/despegue.jpg" alt="">
                     </div>
                 </a>
             </div>
-            <div id="aterrizaje" class="col-sm-5">
-                <a href="/raw" class="card">
+            <div id="inventario" class="col-sm-5">
+                <a class="card" asp-area="" asp-controller="Home" asp-action="Inventario">
                     <div class="card-header">
-                        <h3>Aterrizaje</h3>
+                        <h3>Inventario</h3>
                     </div>
                     <div class="card-body p-0">
-                        <img src="~/img/aterrizaje.webp" alt="">
+                        <img src="~/img/inventario.webp" alt="">
                     </div>
                 </a>
             </div>
