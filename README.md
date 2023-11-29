@@ -4,7 +4,7 @@ Repositorio para el desarrollo del proyecto 2 del curso 03101 – Programación 
 
 ## Los requerimientos mínimos son:
 
-- A**lmacenamiento del inventario de aviones.**
+- **Almacenamiento del inventario de aviones.**
   - Controlar la existencia de aviones en el portaviones, nuevos aviones, retirada de aviones, aterrizajes y despegues.
 - **Pantalla principal**.
   - Presenta las opciones:
