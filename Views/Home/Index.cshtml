@@ -1,8 +1,52 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section id="home_cards" class="rgb-section pt-2">
+    <div class="container">
+        <div class="row pb-4">
+            <div id="ingreso" class="col-sm-5 offset-sm-1">
+                <a class="card" asp-area="" asp-controller="Home" asp-action="Ingreso">
+                    <div class="card-header">
+                        <h3>Ingreso</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <img class="h-100 w-100" src="~/img/ingreso.webp" alt="">
+                    </div>
+                </a>
+            </div>
+            <div id="retiro" class="col-sm-5">
+                <a class="card" asp-area="" asp-controller="Home" asp-action="Retiro">
+                    <div class="card-header">
+                        <h3>Retiro</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <img src="~/img/retiro.webp" alt="">
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div id="despegue" class="col-sm-5 offset-sm-1">
+                <a class="card" asp-area="" asp-controller="Home" asp-action="DespegueAterrizaje">
+                    <div class="card-header">
+                        <h3>Despegue y Aterrizaje</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <img src="~/img/despegue.jpg" alt="">
+                    </div>
+                </a>
+            </div>
+            <div id="inventario" class="col-sm-5">
+                <a class="card" asp-area="" asp-controller="Home" asp-action="Inventario">
+                    <div class="card-header">
+                        <h3>Inventario</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <img src="~/img/inventario.webp" alt="">
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -8,7 +8,11 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -19,4 +23,43 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+.rgb-section-header {
+  color: white;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+}
+
+.card {
+  text-align: center;
+}
+
+.card-header {
+  background-color: black !important;
+  color: #ffffff !important;
+  font-family: 'Cinzel', serif;
+}
+
+.card-link {
+  color: rgb(22, 22, 22);
+}
+
+a {
+  text-decoration: none !important;
+}
+
+a:link {
+  text-decoration: none !important;
+}
+
+.card-body {
+  height: 250px;
+  max-height: 250px;
+}
+
+.card-body>img {
+  max-height: 100%;
+  max-width: 100%;
+  width: 100%;
 }
