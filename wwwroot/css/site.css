@@ -63,3 +63,27 @@ a:link {
   max-width: 100%;
   width: 100%;
 }
+
+.modal-header {
+  color: #ffffff;
+  background-color: black;
+}
+
+.btn-close {
+  background-color: #ffffff;
+}
+
+hr.light-gradient-hr {
+  clear: both;
+  border: 0;
+  background-image: linear-gradient(to right, white, transparent, white),
+    linear-gradient(transparent, rgba(0, 0, 0, 0.55) 150%);
+  background-image: -moz-linear-gradient(to right, white, transparent, white),
+    -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.55) 150%);
+  background-image: -ms-linear-gradient(to right, white, transparent, white),
+    -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.55) 150%);
+}
+
+hr.light-gradient-hr.thick {
+  height: 4px !important;
+}
