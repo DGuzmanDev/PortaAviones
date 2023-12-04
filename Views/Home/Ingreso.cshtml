@@ -105,17 +105,20 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="invalid-feedback" id="error_formulario">
-                            <div class="d-flex justify-content-center my-4">
-                                Por favor revise el formulario y complete la información requerida antes de continuar
+                        <div id="feedback">
+                            <div class="invalid-feedback" id="error_formulario">
+                                <div class="d-flex justify-content-center my-4">
+                                    Por favor revise el formulario y complete la información requerida antes de
+                                    continuar
+                                </div>
+                            </div>
+                            <div class="valid-feedback" id="exito_formulario">
+                                <div class="d-flex justify-content-center my-4">
+                                    Se han agregado los datos del nuevo avión
+                                </div>
                             </div>
                         </div>
-                        <div class="valid-feedback" id="exito_formulario">
-                            <div class="d-flex justify-content-center my-4">
-                                Se han agregado los datos del nuevo avión
-                            </div>
-                        </div>
-                        <div class="row mb-3">
+                        <div id="botones" class="row mb-3">
                             <div class="col-sm-6">
                                 <button class="btn btn-secondary w-100" type="button" id="limpiar"
                                     data-bs-toggle="modal" data-bs-target="#modal_confirm"
@@ -155,6 +158,7 @@
                         <th>Ancho</th>
                         <th>Alto</th>
                         <th>Largo</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="ingreso-body">
