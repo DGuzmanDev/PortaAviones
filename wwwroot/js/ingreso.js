@@ -116,8 +116,9 @@ function agregar_avion() {
         };
 
         nuevos_ingresos.push(nuevo_ingreso);
+        var indice = nuevos_ingresos.length - 1;
 
-        var tr = '<tr>'
+        var tr = '<tr id="nuevo-avion-' + indice + '">'
             + '<td>' + nuevo_ingreso.marca + '</td>'
             + '<td>' + nuevo_ingreso.modelo + '</td>'
             + '<td>' + nuevo_ingreso.serie + '</td>'
@@ -125,11 +126,21 @@ function agregar_avion() {
             + '<td>' + nuevo_ingreso.ancho + 'm</td>'
             + '<td>' + nuevo_ingreso.alto + 'm</td>'
             + '<td>' + nuevo_ingreso.largo + 'm</td>'
+            + '<td><div class="d-flex justify-content-center">'
+            + '<button id="nuevo-avion-' + indice + '" type="button" class="btn btn-danger ms-2">'
+            + '<i class="far fa-trash-alt"></i></button></div></td>'
             + '</tr>';
 
         $('#ingreso-body').append(tr);
+
+        $("#nuevo-avion-" + indice).on("click", function (event) {
+            var posAvion = this.id.replace("nuevo-avion-", "");
+            nuevos_ingresos.splice(posAvion, 1);
+            $('#' + this.id).remove();
+        });
     } else {
-        $('#error_formulario').html("Ya se ha agregado un avión con el mismo número de serie anteriormente");
+        $('#error_ingreso_msg').html("Ya se ha agregado un avión con el mismo número de serie anteriormente");
+        animate_feedback("error_formulario", 3000, 500, 500);
     }
 }
 
