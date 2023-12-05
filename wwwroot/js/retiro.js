@@ -14,10 +14,16 @@ function registrar_evento_limpiar_formulario(tipo) {
     $('#limpiar_confirm').on('click', function (event) {
         retiros = [];
         retiro_actual = {};
-        $('#retiros-body').html('<tr><td>No se han ingresado datos</td></tr>');
-        var form = $(".needs-validation")[0];
-        $(form).removeClass("was-validated");
-        form.reset();
+        $('#retiros-body').html('');
+        $('#resultados').hide(500);
+
+        let forms = $(".needs-validation");
+        for (let index = 0; index < forms.length; index++) {
+            var form = forms[index];
+            $(form).removeClass("was-validated");
+            form.reset();
+        }
+
         $("#close_confirm").trigger("click");
     });
 }
