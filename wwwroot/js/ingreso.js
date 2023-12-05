@@ -139,7 +139,8 @@ function agregar_avion() {
             $('#' + this.id).remove();
         });
     } else {
-        $('#error_formulario').html("Ya se ha agregado un avión con el mismo número de serie anteriormente");
+        $('#error_ingreso_msg').html("Ya se ha agregado un avión con el mismo número de serie anteriormente");
+        animate_feedback("error_formulario", 3000, 500, 500);
     }
 }
 
