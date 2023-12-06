@@ -1,6 +1,66 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Inventario";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+@section Scripts {
+    <script src="~/js/inventario.js" asp-append-version="true"></script>
+}
+
+<section id="tabla" class="container">
+    <legend class="my-2">Lista sintetizada de aviones por modelo</legend>
+    <section id="tabla_sintesis" class="mt-4">
+        <div class="table-responsive py-2">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>
+                            <button type="button" id="ordenar_inventario_sintesis" class="btn">Modelo
+                                <i class="fa-solid fa-sort px-2"></i>
+                            </button>
+                        </th>
+                        <th>Marca</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody id="sintesis_body">
+                    <tr>
+                        <td>No hay registros</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>
+
+<section class="container pt-2 pb-2">
+    <hr class="light-gradient-hr thick">
+</section>
+
+<section id="tabla" class="container">
+    <legend class="my-2">Listado general de inventario</legend>
+    <section id="tabla_retiro" class="mt-4">
+        <div class="table-responsive py-2">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>
+                            <button type="button" id="ordenar_inventario" class="btn">Modelo
+                                <i class="fa-solid fa-sort px-2"></i>
+                            </button>
+                        </th>
+                        <th>Marca</th>
+                        <th>Serie</th>
+                        <th>Nombre</th>
+                        <th>Fecha de Ingreso</th>
+                        <th>Técnico</th>
+                    </tr>
+                </thead>
+                <tbody id="inventario_body">
+                    <tr>
+                        <td>No hay registros</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>

@@ -52,26 +52,26 @@ Repositorio para el desarrollo del proyecto 2 del curso 03101 – Programación 
     - Fecha y hora que inicia los despegues.
     - Técnico encargado de los despegues.
     - Nombre de la misión.
-  - Debe incluir por medio de búsqueda por serie cada uno de los aviones en una lista en la que debe mostrar la marca, modelo y serie del avión y debe capturar el nombre de piloto encargado del avión.
-  - Debe permitir eliminar un registro de la lista. Esto por cuanto pude incluirse por error aviones que no van a la misión.
+    - Debe incluir por medio de búsqueda por serie cada uno de los aviones en una lista en la que debe mostrar la marca, modelo y serie del avión y debe capturar el nombre de piloto encargado del avión.
+    - Debe permitir eliminar un registro de la lista. Esto por cuanto pude incluirse por error aviones que no van a la misión.
   - Hay un botón **“Limpiar”**.
     - Permite eliminar todos los datos mientras no se hayan guardado. Debe presentar una advertencia al usuario indicando que perderá el trabajo realizado.
   - Hay un botón **“Guardar”**.
     - Registra todos los datos.
     - Genera el consecutivo.
-- **Aterrizaje:**
-  - Debe buscar la misión en una lista emergente que permite filtrar por número de despegue. Se carga en una tabla
-  - Debe mostrar todos los datos del despegue y capturar:
-    - Fecha y hora de retorno de cada avión.
-    - Si un avión se perdió durante la misión, debe permitir incluir nueva información:
-      - Se marca como perdido en misión.
-      - Si hubo pérdidas humanas o si se quiere una misión de rescate.
-  - Hay un botón **“Limpiar”**:
-    - Si no hay cambios, no muestra advertencia de que se perderá el trabajo.
-    - Si hay cambios en algún dato y no se ha guardado, debe mostrar un mensaje de advertencia indicando que perderá su trabajo.
-    - Si limpia, la pantalla queda lista para realizar otra nueva búsqueda de despegue o iniciar uno nuevo.
-  - Hay un botón **“Guardar”**.
-    - Se gurda los datos y se cierra el despegue, por lo que no podrá volverse a modificar.
+  - **Aterrizaje:**
+    - Debe buscar la misión en una lista emergente que permite filtrar por número de despegue. Se carga en una tabla
+    - Debe mostrar todos los datos del despegue y capturar:
+      - Fecha y hora de retorno de cada avión.
+      - Si un avión se perdió durante la misión, debe permitir incluir nueva información:
+        - Se marca como perdido en misión.
+        - Si hubo pérdidas humanas o si se quiere una misión de rescate.
+    - Hay un botón **“Limpiar”**:
+      - Si no hay cambios, no muestra advertencia de que se perderá el trabajo.
+      - Si hay cambios en algún dato y no se ha guardado, debe mostrar un mensaje de advertencia indicando que perderá su trabajo.
+      - Si limpia, la pantalla queda lista para realizar otra nueva búsqueda de despegue o iniciar uno nuevo.
+    - Hay un botón **“Guardar”**.
+      - Se gurda los datos y se cierra el despegue, por lo que no podrá volverse a modificar.
 
 **Considerar:**
 
