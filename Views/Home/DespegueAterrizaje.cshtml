@@ -138,6 +138,13 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-sm-6">
+                        <div class="invalid-feedback" id="error_serie_duplicado">
+                            Ya se ha agregado esta aeronave anteriormente
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-6">
                         <label class="form-label" for="Marca_Info">Marca</label>
                         <input class="form-control" type="text" name="Marca_Info" id="Marca_Info" disabled readonly />
                     </div>
@@ -164,6 +171,13 @@
                             </button>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="invalid-feedback" id="error_piloto">
+                                El nombre del polito es requerido
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -179,13 +193,11 @@
                             <th>Marca</th>
                             <th>Modelo</th>
                             <th>Serie</th>
+                            <th>Piloto</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody id="tabla_despegue_body">
-                        <tr>
-                            <td>No hay registros</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>

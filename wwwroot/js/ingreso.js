@@ -118,7 +118,7 @@ function agregar_avion() {
         nuevos_ingresos.push(nuevo_ingreso);
         var indice = nuevos_ingresos.length - 1;
 
-        var tr = '<tr id="nuevo-avion-' + indice + '">'
+        var tr = '<tr id="nuevo-avion-tr' + indice + '">'
             + '<td>' + nuevo_ingreso.marca + '</td>'
             + '<td>' + nuevo_ingreso.modelo + '</td>'
             + '<td>' + nuevo_ingreso.serie + '</td>'
@@ -136,7 +136,7 @@ function agregar_avion() {
         $("#nuevo-avion-" + indice).on("click", function (event) {
             var posAvion = this.id.replace("nuevo-avion-", "");
             nuevos_ingresos.splice(posAvion, 1);
-            $('#' + this.id).remove();
+            $('#nuevo-avion-tr' + indice).remove();
         });
     } else {
         $('#error_ingreso_msg').html("Ya se ha agregado un avión con el mismo número de serie anteriormente");
