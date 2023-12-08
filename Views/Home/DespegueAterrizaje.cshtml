@@ -3,7 +3,7 @@
 }
 
 @section Scripts {
-    <script src="~/js/mision.js" asp-append-version="true"></script>
+    <script src="~/js/misiones.js" asp-append-version="true"></script>
 }
 
 <div class="modal fade" id="modal_confirm" tabindex="-1" aria-labelledby="modal_confirmLabel" aria-hidden="true"
@@ -40,6 +40,7 @@
             <div class="col-sm-6">
                 <label for="tipo_operacion" class="form-label fw-bold">Seleccione el tipo de operación</label>
                 <select name="tipo_opercion" id="tipo_opercion" class="form-select">
+                    <option value="0">Ninguno</option>
                     <option value="1">Despegue</option>
                     <option value="2">Aterrizaje</option>
                 </select>
@@ -89,10 +90,10 @@
     </article>
 
     <article id="parametros_despegue" class="container mb-3">
-        <legend class="my-2">Parámetros de búsqueda</legend>
+        <legend class="my-2">Parámetros de la aeronave</legend>
         <div class="border rounded">
             <div id="parametros" class="p-2 mb-3">
-                <form id="formulario_busqueda" class="needs-validation">
+                <form id="formulario_busqueda_aeronave" class="needs-validation">
                     <fieldset>
                         <div class="row mb-3">
                             <div class="col-sm">
@@ -124,7 +125,7 @@
                     </fieldset>
                 </form>
             </div>
-            <div id="resultados_despegue" class="p-2">
+            <div id="resultados_despegue" class="p-2 hidden">
                 <div class="row mb-3">
                     <div class="col-sm-6">
                         <label class="form-label" for="Serie_Info">Serie</label>
@@ -146,7 +147,7 @@
                     </div>
                 </div>
             </div>
-            <div id="accion_despegue" class="p-2 mb-3">
+            <div id="accion_despegue" class="p-2 mb-3 hidden">
                 <form id="formulario_piloto">
                     <div class="row">
                         <div class="col-sm-6">
@@ -218,7 +219,7 @@
     </article>
 </section>
 
-<section id="aterrizaje">
+<section id="aterrizaje" class="hidden">
     <div class="modal fade" id="modal_aterrizaje" tabindex="-1" aria-labelledby="modal_aterrizajeLabel"
         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -228,54 +229,58 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="container">
-                        <div class="row mb-3">
-                            <div class="col-sm-4">
-                                <label for="Piloto_Info" class="form-label">Nombre del piloto</label>
-                            </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" type="text" name="Piloto_Info" id="Piloto_Info" readonly disabled />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-sm-4">
-                                <label for="FechaAterrizaje" class="form-label">Fecha y hora del aterrizaje</label>
-                            </div>
-                            <div class="col-sm-8">
-                                <input class="form-control" type="datetime-local" name="FechaAterrizaje"
-                                    id="FechaAterrizaje" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-sm">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="Perdida" id="Perdida">
-                                    <label class="form-check-label" for="Perdida">Registra pérdidas</label>
+                    <form id="formulario_datos_aterrizaje">
+                        <div class="container">
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label for="Piloto_Info" class="form-label">Nombre del piloto</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" name="Piloto_Info" id="Piloto_Info" readonly
+                                        disabled />
                                 </div>
                             </div>
-                        </div>
-                        <div id="datos_perdidas" class="container border rounded">
-                            <div class="row my-3">
-                                <div class="col-sm">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="PerdidaMaterial"
-                                            id="PerdidaMaterial">
-                                        <label class="form-check-label" for="flexCheckDefault">Aeronave perdida en misión</label>
-                                    </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label for="FechaAterrizaje" class="form-label">Fecha y hora del aterrizaje</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="datetime-local" name="FechaAterrizaje"
+                                        id="FechaAterrizaje" />
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-sm">
-                                    <label for="PerdidaHumana" class="form-label">Recurso Humano</label>
-                                    <select class="form-select" type="checkbox" name="PerdidaHumana"
-                                        id="PerdidaMaterial">
-                                        <option value="1">Muerto en acción</option>
-                                        <option value="2">Misión de rescate</option>
-                                    </select>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="Perdida" id="Perdida">
+                                        <label class="form-check-label" for="Perdida">Registra pérdidas</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="datos_perdidas" class="container border rounded">
+                                <div class="row my-3">
+                                    <div class="col-sm">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="PerdidaMaterial"
+                                                id="PerdidaMaterial">
+                                            <label class="form-check-label" for="flexCheckDefault">Aeronave perdida en
+                                                misión</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm">
+                                        <label for="PerdidaHumana" class="form-label">Recurso Humano</label>
+                                        <select class="form-select" type="checkbox" name="PerdidaHumana"
+                                            id="PerdidaMaterial">
+                                            <option value="1">Muerto en acción</option>
+                                            <option value="2">Misión de rescate</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <div class="container">
@@ -293,7 +298,7 @@
     </div>
 
     <article id="parametros_aterrizaje" class="container mb-3">
-        <legend class="my-2">Parámetros de búsqueda</legend>
+        <legend class="my-2">Parámetros de búsqueda del aterrizaje</legend>
         <div class="border rounded">
             <div id="parametros" class="p-2 mb-3">
                 <form id="formulario_busqueda_aterraizaje" class="needs-validation">
@@ -377,12 +382,7 @@
     </article>
 
     <article id="botones_accion_aterrizaje" class="container mt-4">
-        <div class="invalid-feedback" id="error_registro_aterrizaje">
-            <div class="d-flex justify-content-center my-4">
-                Por favor ingrese los datos de al menos una aeronave para poder continuar con el proceso
-            </div>
-        </div>
-        <div class="valid-feedback" id="exito_registro">
+        <div class="valid-feedback" id="exito_registro_aterrizaje">
             <div class="d-flex justify-content-center my-4">
                 El registro del aterrizaje se ha completado con éxito
             </div>
@@ -402,9 +402,9 @@
         </div>
     </article>
 
-    <button class="btn btn-danger w-100" type="button" id="temp" data-bs-toggle="modal"
-        data-bs-target="#modal_aterrizaje" data-bs-target-value="modal_aterrizaje">
-        Modal de datos <i class="fa-solid fa-trash-alt px-4"></i></i>
-    </button>
+    @* <button class="btn btn-danger w-100" type="button" id="temp" data-bs-toggle="modal"
+    data-bs-target="#modal_aterrizaje" data-bs-target-value="modal_aterrizaje">
+    Modal de datos <i class="fa-solid fa-trash-alt px-4"></i></i>
+    </button> *@
 
 </section>
