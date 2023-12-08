@@ -78,7 +78,8 @@
                     <div class="row">
                         <div class="col-sm">
                             <label class="form-label" for="FechaDespegue">Fecha y Hora del despegue</label>
-                            <input class="form-control" type="datetime-local" id="FechaDespegue" name="FechaDespegue" required>
+                            <input class="form-control" type="datetime-local" id="FechaDespegue" name="FechaDespegue"
+                                required>
                             <div class="invalid-feedback" id="error_fecha_despegue">
                                 La fecha y hora de la misión son requeridas
                             </div>
@@ -208,9 +209,9 @@
                 continuar
             </div>
         </div>
-        <div class="valid-feedback" id="exito_registro">
+        <div class="valid-feedback" id="exito_registro_despegue_msg">
             <div class="d-flex justify-content-center my-4">
-                El registro del despegue se ha completado con éxito
+                <p id="exito_registro_despegue_msg"></p>
             </div>
         </div>
         <div class="row my-3 py-3">
@@ -267,7 +268,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="datos_perdidas" class="container border rounded">
+                            <div id="datos_perdidas" class="container border rounded hidden">
                                 <div class="row my-3">
                                     <div class="col-sm">
                                         <div class="form-check">
@@ -311,37 +312,19 @@
         <legend class="my-2">Parámetros de búsqueda del aterrizaje</legend>
         <div class="border rounded">
             <div id="parametros" class="p-2 mb-3">
-                <form id="formulario_busqueda_aterrizaje" class="needs-validation">
-                    <fieldset>
-                        <div class="row">
-                            <label class="form-label" for="Codigo">Código de despegue:</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <input class="form-control" type="text" name="Codigo" id="Codigo" required />
-                                <div class="invalid-feedback" id="error_codigo">
-                                    El código de despegue es requerido
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <button class="btn btn-primary w-100" type="submit" id="buscar_despegue"
-                                    form="formulario_busqueda">
-                                    Buscar <i class="fa-solid fa-magnifying-glass px-4"></i></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="feedback">
-                            <div class="invalid-feedback" id="error_formulario_busqueda">
-                                <div class="d-flex justify-content-center my-4">
-                                    Por favor revise el formulario y complete la información requerida antes de
-                                    continuar
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
+                <div class="row">
+                    <label class="form-label" for="Codigo">Código de despegue:</label>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm">
+                        <input class="form-control" list="lista_codigos_despegue" id="Codigo"
+                            placeholder="Digite el código de despegue para iniciar la búsqueda...">
+                        <datalist id="lista_codigos_despegue">
+                        </datalist>
+                    </div>
+                </div>
             </div>
-            <div id="resultados_aterrizaje" class="p-2">
+            <div id="resultados_aterrizaje" class="p-2 hidden">
                 <div class="row mb-3">
                     <div class="col-sm-6">
                         <label class="form-label" for="Codigo_Info">Código</label>
@@ -368,7 +351,7 @@
         </div>
     </article>
 
-    <article id="tabla_aterrizaje" class="container mb-3">
+    <article id="tabla_aterrizaje" class="container mb-3 hidden">
         <legend class="my-2">Aeronaves incluidas en el aterrizaje</legend>
         <div class="mt-4">
             <div class="table-responsive py-2">
@@ -382,9 +365,6 @@
                         </tr>
                     </thead>
                     <tbody id="tabla_aterrizaje_body">
-                        <tr>
-                            <td>No hay registros</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -392,6 +372,12 @@
     </article>
 
     <article id="botones_accion_aterrizaje" class="container mt-4">
+        <div class="invalid-feedback" id="error_formulario_aterrizaje">
+            <div class="d-flex justify-content-center my-4">
+                Por favor revise el formulario y complete la información requerida antes de
+                continuar
+            </div>
+        </div>
         <div class="valid-feedback" id="exito_registro_aterrizaje">
             <div class="d-flex justify-content-center my-4">
                 El registro del aterrizaje se ha completado con éxito
