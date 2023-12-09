@@ -409,14 +409,6 @@ function registrar_evento_enviar_aterrizaje() {
     });
 }
 
-// IMPORTNATE: Al darle guardar al modal de update de aterrizaje tengo que actualizar lo del check y eso
-// para que quede en memoria antes del save de cada aterrizaje
-
-// TODO:
-// 1. Guardar los cambios que se produzcan en el modal
-// 2. Guardar el registro general
-// 3. Funcionalidad del boton de limpiar
-
 $(document).ready(function () {
     console.log('misiones.js JavaScript - Daniel Guzman Chaves - Programación Avanzanda en Web -  UNED IIIQ 2023');
     configurar_limite_fechas();
