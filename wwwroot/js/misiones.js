@@ -288,12 +288,13 @@ function cargar_registro_despegues() {
 
 function registrar_evento_cargar_despegue() {
     $('#Codigo').on('change', function (event) {
+        var codigo = this.value;
         limpiar_aterrizaje();
         ocultar_resultados_busqueda_despegue(500);
 
         // TODO: Mandar un request al BE para obtener todos los detalles del despegue, incluyendo el avion, piloto, etc
         var despegue_seleccionado = despegues.find(item => {
-            return item.codigo === this.value
+            return item.codigo === codigo
         });
 
         registro_aterrizaje.despegue = despegue_seleccionado;
@@ -339,7 +340,7 @@ function registrar_evento_modal_aterrizaje() {
 
         if (aeronave.perdidas !== undefined && aeronave.perdidas !== null) {
             $('#PerdidaMaterial').prop('checked', aeronave.perdidas.perdidaMaterial);
-            $("PerdidaHumana").val(aeronave.perdidas.perdidaHumana);
+            $("#PerdidaHumana").val(aeronave.perdidas.perdidaHumana);
             $('#Perdida').prop('checked', true);
             $('#datos_perdidas').show(500);
         } else {
@@ -369,14 +370,14 @@ function registrar_evento_guardar_datos_aterrizaje() {
             var data_index = $("#guardar_datos_aterrizaje").attr("data-bs-target-value");
             var aeronave = registro_aterrizaje.despegue.aeronaves[data_index];
 
-            var registra_perdidas = $('#Perdida').val();
+            var registra_perdidas = $('#Perdida').is(":checked");
 
             if (registra_perdidas) {
                 if (aeronave.perdidas === undefined || aeronave.perdidas == null) {
                     aeronave.perdidas = {};
                 }
 
-                var perdida_material = $('#PerdidaMaterial').val();
+                var perdida_material = $('#PerdidaMaterial').is(":checked");
                 var perdida_humana = $("#PerdidaHumana").val();
                 aeronave.perdidas.perdidaMaterial = perdida_material;
                 aeronave.perdidas.perdidaHumana = perdida_humana;
@@ -384,8 +385,8 @@ function registrar_evento_guardar_datos_aterrizaje() {
 
             aeronave.fechaAterrizaje = fecha_aterrizaje;
             $(form_datos_aterrizaje).removeClass('was-validated');
-            form_datos_aterrizaje.reset();
             $('#close_datos_aterrizaje').trigger('click');
+            form_datos_aterrizaje.reset();
         }
     });
 }
@@ -396,7 +397,7 @@ function registrar_evento_enviar_aterrizaje() {
 
         var es_valido = registro_aterrizaje.despegue.aeronaves.find(item => {
             return item.fechaAterrizaje === undefined || item.fechaAterrizaje.trim() === '';
-        }) !== undefined;
+        }) === undefined;
 
         if (es_valido) {
             // TODO: Mandar el reques al BE para el save
