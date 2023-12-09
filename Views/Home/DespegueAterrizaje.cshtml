@@ -1,6 +1,400 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Despegue y Aterrizaje";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+@section Scripts {
+    <script src="~/js/misiones.js" asp-append-version="true"></script>
+}
+
+<div class="modal fade" id="modal_confirm" tabindex="-1" aria-labelledby="modal_confirmLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header main-header">
+                <h5 class="modal-title" id="modal_confirmLabel">Limpiar datos sin guardar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <p class="fw-bold">¿Está seguro que desea limpiar los cambios sin guardar?</p>
+                    <p>Esta acción es irreversible y deberá iniciar el proceso nuevamente.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="container">
+                    <div class="d-flex justify-content-end">
+                        <button id="close_confirm" type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button id="limpiar_confirm" type="button" class="btn btn-primary btn btn-primary mx-2"
+                            aria-label="Guardar cambios">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="selector_ops">
+    <article class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="tipo_operacion" class="form-label fw-bold">Seleccione el tipo de operación</label>
+                <select name="tipo_opercion" id="tipo_operacion" class="form-select">
+                    <option value="0">Ninguno</option>
+                    <option value="1">Despegue</option>
+                    <option value="2">Aterrizaje</option>
+                </select>
+            </div>
+        </div>
+    </article>
+</section>
+
+<section class="container pt-4 pb-4">
+    <hr class="light-gradient-hr thick">
+</section>
+
+<section id="despegue" class="hidden">
+    <article id="datos_generales_despegue" class="container mb-3">
+        <legend class="my-2">Datos generales del despegue</legend>
+        <div class="col-sm border rounded p-2">
+            <form id="formulario_despegue" class="needs-validation mb-2">
+                <fieldset>
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label" for="Tecnico">Técnico encargado</label>
+                            <input class="form-control" type="text" name="Tecnico" id="Tecnico" required />
+                            <div class="invalid-feedback" id="error_tecnico">
+                                El nombre del técnico es requerido
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="Mision">Nombre de la misión</label>
+                            <input class="form-control" type="text" name="Mision" id="Mision" required />
+                            <div class="invalid-feedback" id="error_mision">
+                                El nombre de la misión es requerida
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <label class="form-label" for="FechaDespegue">Fecha y Hora del despegue</label>
+                            <input class="form-control" type="datetime-local" id="FechaDespegue" name="FechaDespegue"
+                                required>
+                            <div class="invalid-feedback" id="error_fecha_despegue">
+                                La fecha y hora de la misión son requeridas
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </article>
+
+    <article id="parametros_despegue" class="container mb-3">
+        <legend class="my-2">Parámetros de la aeronave</legend>
+        <div class="border rounded">
+            <div id="parametros" class="p-2 mb-3">
+                <form id="formulario_busqueda_aeronave" class="needs-validation">
+                    <fieldset>
+                        <div class="row mb-3">
+                            <div class="col-sm">
+                                <label class="form-label" for="Serie">Número de serie:</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input class="form-control" type="text" name="Serie" id="Serie" required />
+                                <div class="invalid-feedback" id="error_serie">
+                                    El número de serie es requerido
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btn-primary w-100" type="submit" id="buscar_serie"
+                                    form="formulario_busqueda">
+                                    Buscar <i class="fa-solid fa-magnifying-glass px-4"></i></i>
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div id="resultados_despegue" class="p-2 hidden">
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Serie_Info">Serie</label>
+                        <input class="form-control" type="text" name="Serie_Info" id="Serie_Info" disbled readonly />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Nombre_Info">Nombre de fantasía</label>
+                        <input class="form-control" type="text" name="Nombre_Info" id="Nombre_Info" disbled readonly />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <div class="invalid-feedback" id="error_serie_duplicado">
+                            Ya se ha agregado esta aeronave anteriormente
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Marca_Info">Marca</label>
+                        <input class="form-control" type="text" name="Marca_Info" id="Marca_Info" disabled readonly />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Modelo_Info">Modelo</label>
+                        <input class="form-control" type="text" name="Modelo_Info" id="Modelo_Info" disabled readonly />
+                    </div>
+                </div>
+            </div>
+            <div id="accion_despegue" class="p-2 mb-3 hidden">
+                <form id="formulario_piloto">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label class="form-label" for="Piloto">Nombre del piloto</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <input class="form-control" type="text" name="Piloto" id="Piloto" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <button class="btn btn-success w-100" type="submit" id="agregar" form="formulario_agregar">
+                                Agregar aeronave<i class="fa-solid fa-plane-circle-check px-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="invalid-feedback" id="error_piloto">
+                                El nombre del polito es requerido
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </article>
+
+    <article id="tabla_despegue" class="container mb-3">
+        <legend class="my-2">Aeronaves incluidas en el despegue</legend>
+        <div class="mt-4">
+            <div class="table-responsive py-2">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Serie</th>
+                            <th>Piloto</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla_despegue_body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    <article id="botones_accion_despegue" class="container mt-4">
+        <div class="invalid-feedback" id="error_aeronaves_despegue">
+            <div class="d-flex justify-content-center my-4">
+                Por favor ingrese los datos de al menos una aeronave para poder continuar con el proceso
+            </div>
+        </div>
+        <div class="invalid-feedback" id="error_formulario_despegue">
+            <div class="d-flex justify-content-center my-4">
+                Por favor revise el formulario y complete la información requerida antes de
+                continuar
+            </div>
+        </div>
+        <div class="valid-feedback" id="exito_registro_despegue_msg">
+            <div class="d-flex justify-content-center my-4">
+                <p id="exito_registro_despegue_msg"></p>
+            </div>
+        </div>
+        <div class="row my-3 py-3">
+            <div class="col-sm-4">
+                <button class="btn btn-danger w-100" type="button" id="limpiar_todo_despegue" data-bs-toggle="modal"
+                    data-bs-target="#modal_confirm" data-bs-target-value="total_despegue">
+                    Limpiar todo <i class="fa-solid fa-trash-alt px-4"></i></i>
+                </button>
+            </div>
+            <div class="col-sm-4">
+                <button class="btn btn-primary w-100" type="submit" id="enviar_despegue">
+                    Guardar <i class="fa-solid fa-paper-plane px-4"></i>
+                </button>
+            </div>
+        </div>
+    </article>
+</section>
+
+<section id="aterrizaje" class="hidden">
+    <div class="modal fade" id="modal_aterrizaje" tabindex="-1" aria-labelledby="modal_aterrizajeLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header main-header">
+                    <h5 class="modal-title" id="modal_aterrizajeLabel">Datos del aterrizaje</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formulario_datos_aterrizaje">
+                        <div class="container">
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label for="Piloto_Info" class="form-label">Nombre del piloto</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" name="Piloto_Info" id="Piloto_Info" readonly
+                                        disabled />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label for="FechaAterrizaje" class="form-label">Fecha y hora del aterrizaje</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="datetime-local" name="FechaAterrizaje"
+                                        id="FechaAterrizaje" required />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="Perdida" id="Perdida">
+                                        <label class="form-check-label" for="Perdida">Registra pérdidas</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="datos_perdidas" class="container border rounded hidden">
+                                <div class="row my-3">
+                                    <div class="col-sm">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="PerdidaMaterial"
+                                                id="PerdidaMaterial">
+                                            <label class="form-check-label" for="PerdidaMaterial">Aeronave perdida en
+                                                misión</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm">
+                                        <label for="PerdidaHumana" class="form-label">Recurso Humano</label>
+                                        <select class="form-select" type="checkbox" name="PerdidaHumana"
+                                            id="PerdidaHumana">
+                                            <option value="1">Muerto en acción</option>
+                                            <option value="2">Misión de rescate</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="container">
+                        <div class="d-flex justify-content-end">
+                            <button id="close_datos_aterrizaje" type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button id="guardar_datos_aterrizaje" type="button"
+                                class="btn btn-primary btn btn-primary mx-2"
+                                aria-label="Guardar cambios">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <article id="parametros_aterrizaje" class="container mb-3">
+        <legend class="my-2">Parámetros de búsqueda del aterrizaje</legend>
+        <div class="border rounded">
+            <div id="parametros" class="p-2 mb-3">
+                <div class="row">
+                    <label class="form-label" for="Codigo">Código de despegue:</label>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm">
+                        <input class="form-control" list="lista_codigos_despegue" id="Codigo"
+                            placeholder="Digite el código de despegue para iniciar la búsqueda...">
+                        <datalist id="lista_codigos_despegue">
+                        </datalist>
+                    </div>
+                </div>
+            </div>
+            <div id="resultados_aterrizaje" class="p-2 hidden">
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Codigo_Info">Código</label>
+                        <input class="form-control" type="text" name="Codigo_Info" id="Codigo_Info" disbled readonly />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Mision_Info">Nombre de la misión</label>
+                        <input class="form-control" type="text" name="Mision_Info" id="Mision_Info" disbled readonly />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Tecnico_Info">Técnico encargado</label>
+                        <input class="form-control" type="text" name="Tecnico_Info" id="Tecnico_Info" disabled
+                            readonly />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Fecha_Info">Fecha y Hora del despegue</label>
+                        <input class="form-control" type="datetime-local" name="Fecha_Info" id="Fecha_Info" disabled
+                            readonly />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <article id="tabla_aterrizaje" class="container mb-3 hidden">
+        <legend class="my-2">Aeronaves incluidas en el aterrizaje</legend>
+        <div class="mt-4">
+            <div class="table-responsive py-2">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Serie</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla_aterrizaje_body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    <article id="botones_accion_aterrizaje" class="container mt-4">
+        <div class="invalid-feedback" id="error_formulario_aterrizaje">
+            <div class="d-flex justify-content-center my-4">
+                Por favor ingrese la fecha de aterrizaje de todas la aeronaves antes de
+                continuar
+            </div>
+        </div>
+        <div class="valid-feedback" id="exito_registro_aterrizaje">
+            <div class="d-flex justify-content-center my-4">
+                El registro del aterrizaje se ha completado con éxito
+            </div>
+        </div>
+        <div class="row my-3 py-3">
+            <div class="col-sm-4">
+                <button class="btn btn-danger w-100" type="button" id="limpiar_todo_aterrizaje" data-bs-toggle="modal"
+                    data-bs-target="#modal_confirm" data-bs-target-value="total_aterrizaje">
+                    Limpiar todo <i class="fa-solid fa-trash-alt px-4"></i></i>
+                </button>
+            </div>
+            <div class="col-sm-4">
+                <button class="btn btn-primary w-100" type="submit" id="enviar_aterrizaje">
+                    Guardar <i class="fa-solid fa-paper-plane px-4"></i>
+                </button>
+            </div>
+        </div>
+    </article>
+</section>

@@ -87,3 +87,7 @@ hr.light-gradient-hr {
 hr.light-gradient-hr.thick {
   height: 4px !important;
 }
+
+.hidden {
+  display: none;
+}
