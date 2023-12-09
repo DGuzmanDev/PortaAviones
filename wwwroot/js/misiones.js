@@ -19,25 +19,13 @@ const despegues = [
         aeronaves: [
             {
                 aeronave: inventario[0],
-                piloto: "El nombre del piloto 0",
-                perdidas: {
-                    perdidaMaterial: true,
-                    perdidaHumana: 1
-                }
+                piloto: "El nombre del piloto 0"
             }, {
                 aeronave: inventario[3],
-                piloto: "El nombre del piloto 1",
-                perdidas: {
-                    perdidaMaterial: true,
-                    perdidaHumana: 2
-                }
+                piloto: "El nombre del piloto 1"
             }, {
                 aeronave: inventario[5],
-                piloto: "El nombre del piloto 2",
-                perdidas: {
-                    perdidaMaterial: false,
-                    perdidaHumana: 2
-                }
+                piloto: "El nombre del piloto 2"
             }
         ]
     },
@@ -51,12 +39,10 @@ const despegues = [
         aeronaves: [
             {
                 aeronave: inventario[0],
-                piloto: "El nombre del piloto 3",
-                perdidas: undefined
+                piloto: "El nombre del piloto 3"
             }, {
                 aeronave: inventario[3],
-                piloto: "El nombre del piloto 4",
-                perdidas: null
+                piloto: "El nombre del piloto 4"
             }, {
                 aeronave: inventario[5],
                 piloto: "El nombre del piloto 5"
@@ -98,8 +84,9 @@ function limpiar_despegue() {
 }
 
 function limpiar_aterrizaje() {
-    aterrizaje = {};
+    registro_aterrizaje = {};
     ocultar_resultados_busqueda_despegue(0);
+    $('#Codigo').val('');
     $('#formulario_datos_aterrizaje')[0].reset();
     $($('#formulario_datos_aterrizaje')[0]).removeClass('was-validated');
     $('#tabla_aterrizaje_body').html('');
@@ -133,12 +120,16 @@ function registrar_evento_operacion() {
     });
 }
 
+function rellenar_ceros_fecha(valor) {
+    return valor < 10 ? "0" + valor : valor;
+}
+
 function configurar_limite_fechas() {
     var min = new Date();
-    var minHour = min.getHours() < 10 ? "0" + min.getHours() : min.getHours();
-    var minMinutes = min.getMinutes() < 10 ? "0" + min.getMinutes() : min.getMinutes();
-    var minDay = min.getDate() < 10 ? "0" + min.getDate() : min.getDate();
-    var minMonth = (min.getMonth() + 1) < 10 ? "0" + (min.getMonth() + 1) : (min.getMonth() + 1);
+    var minHour = rellenar_ceros_fecha(min.getHours());
+    var minMinutes = rellenar_ceros_fecha(min.getMinutes());
+    var minDay = rellenar_ceros_fecha(min.getDate());
+    var minMonth = rellenar_ceros_fecha(min.getMonth() + 1);
 
     $("#FechaDespegue").val(min.getFullYear() + "-" + minMonth + "-" + minDay + "T" + minHour + ":" + minMinutes);
     $("#FechaDespegue").attr("min", min.getFullYear() + "-" + minMonth + "-" + minDay + "T" + minHour + ":" + minMinutes);
@@ -160,7 +151,7 @@ function registrar_evento_limpiar_formulario(tipo) {
         if (tipo === EVENTO_LIMPIAR_DESPEGUE) {
             limpiar_despegue();
         } else {
-            alert('No configurado');
+            limpiar_aterrizaje();
         }
         $("#close_confirm").trigger("click");
     });
@@ -305,20 +296,22 @@ function registrar_evento_cargar_despegue() {
             return item.codigo === this.value
         });
 
-        $('#Codigo_Info').val(despegue_seleccionado.codigo);
-        $('#Mision_Info').val(despegue_seleccionado.nombre);
-        $('#Tecnico_Info').val(despegue_seleccionado.tecnico);
-        $('#Fecha_Info').val(despegue_seleccionado.fecha);
+        registro_aterrizaje.despegue = despegue_seleccionado;
 
-        for (let index = 0; index < despegue_seleccionado.aeronaves.length; index++) {
-            var aeronave_seleccionada = despegue_seleccionado.aeronaves[index];
+        $('#Codigo_Info').val(registro_aterrizaje.despegue.codigo);
+        $('#Mision_Info').val(registro_aterrizaje.despegue.nombre);
+        $('#Tecnico_Info').val(registro_aterrizaje.despegue.tecnico);
+        $('#Fecha_Info').val(registro_aterrizaje.despegue.fecha);
+
+        for (let index = 0; index < registro_aterrizaje.despegue.aeronaves.length; index++) {
+            var aeronave = registro_aterrizaje.despegue.aeronaves[index].aeronave;
 
             var tr = '<tr id="aeronave-aterrizaje' + index + '">'
-                + '<td>' + aeronave_seleccionada.aeronave.marca + '</td>'
-                + '<td>' + aeronave_seleccionada.aeronave.modelo + '</td>'
-                + '<td>' + aeronave_seleccionada.aeronave.serie + '</td>'
+                + '<td>' + aeronave.marca + '</td>'
+                + '<td>' + aeronave.modelo + '</td>'
+                + '<td>' + aeronave.serie + '</td>'
                 + '<td><button type="button" class="btn btn-success ms-2" data-bs-toggle="modal"'
-                + 'data-bs-target="#modal_aterrizaje" data-bs-target-value="' + index + '" data-bs-target-parent="' + despegue_seleccionado.codigo + '">'
+                + 'data-bs-target="#modal_aterrizaje" data-bs-target-value="' + index + '" data-bs-target-parent="' + registro_aterrizaje.despegue.codigo + '">'
                 + '<i class="fas fa-edit"></i></button></td>'
                 + '</tr>';
 
@@ -333,13 +326,16 @@ function registrar_evento_modal_aterrizaje() {
     $("#modal_aterrizaje").on('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var data_index = button.getAttribute('data-bs-target-value');
-        var parent_id = button.getAttribute('data-bs-target-parent');
-        var despegue_seleccionado = despegues.find(item => {
-            return item.codigo === parent_id
-        });
+        var aeronave = registro_aterrizaje.despegue.aeronaves[data_index];
 
-        var aeronave = despegue_seleccionado.aeronaves[data_index];
+        $("#guardar_datos_aterrizaje").attr("data-bs-target-value", data_index);
         $('#Piloto_Info').val(aeronave.piloto);
+
+        if (aeronave.fechaAterrizaje !== undefined) {
+            $('#FechaAterrizaje').val(aeronave.fechaAterrizaje);
+        } else {
+            configurar_limite_fechas();
+        }
 
         if (aeronave.perdidas !== undefined && aeronave.perdidas !== null) {
             $('#PerdidaMaterial').prop('checked', aeronave.perdidas.perdidaMaterial);
@@ -363,8 +359,62 @@ function registrar_evento_perdidas_aterrizaje() {
     });
 }
 
+function registrar_evento_guardar_datos_aterrizaje() {
+    $('#guardar_datos_aterrizaje').on('click', function (event) {
+        var form_datos_aterrizaje = $('#formulario_datos_aterrizaje')[0];
+        var fecha_aterrizaje = $('#FechaAterrizaje').val();
+        $(form_datos_aterrizaje).addClass('was-validated');
+
+        if (form_datos_aterrizaje.checkValidity() && fecha_aterrizaje !== undefined && fecha_aterrizaje.trim() !== '') {
+            var data_index = $("#guardar_datos_aterrizaje").attr("data-bs-target-value");
+            var aeronave = registro_aterrizaje.despegue.aeronaves[data_index];
+
+            var registra_perdidas = $('#Perdida').val();
+
+            if (registra_perdidas) {
+                if (aeronave.perdidas === undefined || aeronave.perdidas == null) {
+                    aeronave.perdidas = {};
+                }
+
+                var perdida_material = $('#PerdidaMaterial').val();
+                var perdida_humana = $("#PerdidaHumana").val();
+                aeronave.perdidas.perdidaMaterial = perdida_material;
+                aeronave.perdidas.perdidaHumana = perdida_humana;
+            }
+
+            aeronave.fechaAterrizaje = fecha_aterrizaje;
+            $(form_datos_aterrizaje).removeClass('was-validated');
+            form_datos_aterrizaje.reset();
+            $('#close_datos_aterrizaje').trigger('click');
+        }
+    });
+}
+
+function registrar_evento_enviar_aterrizaje() {
+    $('#enviar_aterrizaje').on('click', function (event) {
+        event.preventDefault();
+
+        var es_valido = registro_aterrizaje.despegue.aeronaves.find(item => {
+            return item.fechaAterrizaje === undefined || item.fechaAterrizaje.trim() === '';
+        }) !== undefined;
+
+        if (es_valido) {
+            // TODO: Mandar el reques al BE para el save
+            limpiar_aterrizaje();
+            animate_feedback('exito_registro_aterrizaje', 3000, 500, 500);
+        } else {
+            animate_feedback('error_formulario_aterrizaje', 5000, 500, 500);
+        }
+    });
+}
+
 // IMPORTNATE: Al darle guardar al modal de update de aterrizaje tengo que actualizar lo del check y eso
 // para que quede en memoria antes del save de cada aterrizaje
+
+// TODO:
+// 1. Guardar los cambios que se produzcan en el modal
+// 2. Guardar el registro general
+// 3. Funcionalidad del boton de limpiar
 
 $(document).ready(function () {
     console.log('misiones.js JavaScript - Daniel Guzman Chaves - Programación Avanzanda en Web -  UNED IIIQ 2023');
@@ -376,4 +426,6 @@ $(document).ready(function () {
     registrar_evento_cargar_despegue();
     registrar_evento_modal_aterrizaje();
     registrar_evento_perdidas_aterrizaje();
+    registrar_evento_guardar_datos_aterrizaje();
+    registrar_evento_enviar_aterrizaje();
 });
