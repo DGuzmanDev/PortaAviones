@@ -2,12 +2,11 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 var app = builder.Build();
 
@@ -18,7 +17,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseExceptionHandler("/Home/Error");
+app.UseExceptionHandler("/Home/ErrorHandler");
 
 //Esta condicion es necesaria para poder ejecutar la solucion publicada directamente desde un Mac OS
 //Ya que el folder wwwroot no se encuentra en el mismo directorio en este sistema operativo, por lo que los archivos

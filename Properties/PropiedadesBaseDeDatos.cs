@@ -12,7 +12,9 @@ namespace GestionHerramientas.Properties
         public static readonly string _PwdBaseDeDatos = "Admin@SQLServer03101";
 
         //Propiedades especificas
-        // public static readonly string _TablaColaboradores = "colaborador";
+        public static readonly string _TablaAeronave = "aeronave";
+        public static readonly string _TablaMarca = "marca";
+        public static readonly string _TablaModelo = "modelo";
 
         public static string ObtenerStringDeConexion()
         {
@@ -20,18 +22,39 @@ namespace GestionHerramientas.Properties
                 + ";User Id=" + _UsuarioBaseDeDatos + ";Password=" + _PwdBaseDeDatos + ";TrustServerCertificate=true";
         }
 
-        // public static class Colaborador
-        // {
-        //     //Propiedades estaticas asocias con la Base de Datos
-        //     public static readonly string _Nombre = "colaborador";
-        //     public static readonly string _ColumnaId = "id";
-        //     public static readonly string _ColumnaIdentificacion = "identificacion";
-        //     public static readonly string _ColumnaNombre = "nombre";
-        //     public static readonly string _ColumnaApellidos = "apellidos";
-        //     public static readonly string _ColumnaEstado = "estado";
-        //     public static readonly string _ColumnaFechaRegistro = "fecha_registro";
-        //     public static readonly string _ColumnaFechaActualizacion = "fecha_actualizacion";
-        // }
+        public static class Aeronave
+        {
+            //Propiedades estaticas asocias con la Base de Datos
+            public static readonly string _Nombre = "aeronave";
+            public static readonly string _ColumnaId = "id";
+            public static readonly string _ColumnaSerie = "serie";
+            public static readonly string _ColumnaMarcaFk = "marca_fk";
+            public static readonly string _ColumnaModeloFk = "modelo_fk";
+            public static readonly string _ColumnaNombre = "nombre";
+            public static readonly string _ColumnaAlto = "alto";
+            public static readonly string _ColumnaAncho = "ancho";
+            public static readonly string _ColumnaLargo = "largo";
+            public static readonly string _ColumnaRetirado = "retirado";
+            public static readonly string _ColumnaTecnicoIngreso = "tecnico_ingreso";
+            public static readonly string _ColumnaTecnicoRetiro = "tecnico_retiro";
+            public static readonly string _ColumnaPerdidaMaterial = "perdida_material";
+            public static readonly string _ColumnaPerdidaHumana = "perdida_humana";
+            public static readonly string _ColumnaFechaRegistro = "fecha_registro";
+            public static readonly string _ColumnaFechaActualizacion = "fecha_actualizacion";
+        }
+
+        public static class Marca
+        {
+            public static readonly string _ColumnaId = "id";
+            public static readonly string _ColumnaNombre = "nombre";
+        }
+
+        public static class Modelo
+        {
+            public static readonly string _ColumnaId = "id";
+            public static readonly string _ColumnaNombre = "nombre";
+            public static readonly string _ColumnaMarcaFk = "marca_fk";
+        }
     }
 }
 

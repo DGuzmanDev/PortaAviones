@@ -1,40 +1,68 @@
-var nuevo_ingreso = {};
-var nuevos_ingresos = [];
-
-function cargar_marcas() {
-    // aqui tiene que ser eventualmente un http request al BE
-    for (let index = 0; index < aviones.length; index++) {
-        var avion = aviones[index];
-
-        $('#Marca').append($('<option>', {
-            value: avion.marca,
-            text: avion.marca
-        }));
-    }
-
-    $("#Marca").on('change', function (event) {
-        cargar_modelos(this.value);
-    });
-
-    $("#Marca").val(aviones[0].marca);
-    cargar_modelos(aviones[0].marca);
+var ingreso = {
+    aeronaves: []
 }
 
-function cargar_modelos(marca) {
-    // aqui tengo que encontrar la marca y jalar los modelos que tenga
-    var marcaSeleccionada = aviones.find(item => {
-        return item.marca == marca
+function cargar_marcas() {
+    $.ajax({
+        type: "GET",
+        url: "/api/Marcas/buscar",
+        success: function (data, status) {
+
+            for (let index = 0; index < data.length; index++) {
+                var marca = data[index];
+
+                $('#Marca').append($('<option>', {
+                    value: marca.id,
+                    text: marca.nombre
+                }));
+            }
+
+            $("#Marca").on('change', function (event) {
+                cargar_modelos(this.value);
+            });
+
+            $("#Marca").val(data[0].id);
+            cargar_modelos(data[0].id);
+        },
+        error: function (data, status) {
+            window.location.replace("/Home/Error?errorMessage=" +
+                encodeURIComponent(data.responseText) + "&httpError=" +
+                encodeURIComponent(data.status + " " + data.statusText));
+        },
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
     });
+}
 
-    var modelos = marcaSeleccionada.modelos;
-
+function cargar_modelos(marcaId) {
     $("#Modelo").empty();
-    $.each(modelos, function (i, modelo) {
-        $('#Modelo').append($('<option>', {
-            value: modelo,
-            text: modelo
-        }));
+
+    $.ajax({
+        type: "GET",
+        url: "/api/Modelos/buscar/marca/" + encodeURIComponent(marcaId),
+        success: function (data, status) {
+
+            $.each(data, function (i, modelo) {
+                $('#Modelo').append($('<option>', {
+                    value: modelo.id,
+                    text: modelo.nombre
+                }));
+            });
+        },
+        error: function (data, status) {
+            window.location.replace("/Home/Error?errorMessage=" +
+                encodeURIComponent(data.responseText) + "&httpError=" +
+                encodeURIComponent(data.status + " " + data.statusText));
+        },
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
     });
+}
+
+function reiniciar_formulario(formId) {
+    var form = $("#" + formId)[0];
+    $(form).removeClass("was-validated");
+    form.reset();
 }
 
 function registrar_evento_modal() {
@@ -45,33 +73,32 @@ function registrar_evento_modal() {
     });
 }
 
+function limpiar_formulario(tipo) {
+    if (tipo === 'total') {
+        ingreso = { aeronaves: [] };
+        $('#ingreso-body').html('<tr><td>No se han ingresado datos</td></tr>');
+    }
+
+    reiniciar_formulario('formulario_general');
+    reiniciar_formulario('formulario_registro');
+}
+
 function registrar_evento_limpiar_formulario(tipo) {
     $('#limpiar_confirm').off('click');
     $('#limpiar_confirm').on('click', function (event) {
-
-        if (tipo === 'total') {
-            nuevos_ingresos = [];
-            $('#ingreso-body').html('<tr><td>No se han ingresado datos</td></tr>');
-        }
-
-        nuevo_ingreso = {};
-        var form = $(".needs-validation")[0];
-        $(form).removeClass("was-validated");
-        form.reset();
+        limpiar_formulario(tipo);
         $("#close_confirm").trigger("click");
     });
 }
 
 function validar_datos_entrada() {
-    var tecnico = $('#Tecnico').val();
     var serie = $('#Serie').val();
     var nombre = $('#Nombre').val();
     var ancho = $('#Ancho').val();
     var alto = $('#Alto').val();
     var largo = $('#Largo').val();
 
-    if ((tecnico === undefined || tecnico.trim() === '')
-        || (serie === undefined || serie.trim() === '')
+    if ((serie === undefined || serie.trim() === '')
         || (nombre === undefined || nombre.trim() === '')
         || (ancho === undefined || ancho.trim() === '' || ancho <= 0)
         || (alto === undefined || alto.trim() === '' || alto <= 0)
@@ -82,65 +109,63 @@ function validar_datos_entrada() {
     return true;
 }
 
-function agregar_avion() {
-    // aqui es obtener todos los datos del formulario y agregar el elemento a la lista
-    var tecnico = $('#Tecnico').val();
-    var marca = $('#Marca').val();
-    var modelo = $('#Modelo').val();
-    var serie = $('#Serie').val();
-    var nombre = $('#Nombre').val();
-    var ancho = $('#Ancho').val();
-    var alto = $('#Alto').val();
-    var largo = $('#Largo').val();
+function actualizar_tabla_aviones(indice, nueva_aeronave) {
+    var tr = '<tr id="nuevo-avion-tr' + indice + '">'
+        + '<td>' + nueva_aeronave.marca.nombre + '</td>'
+        + '<td>' + nueva_aeronave.modelo.nombre + '</td>'
+        + '<td>' + nueva_aeronave.serie + '</td>'
+        + '<td>' + nueva_aeronave.nombre + '</td>'
+        + '<td>' + nueva_aeronave.ancho + 'm</td>'
+        + '<td>' + nueva_aeronave.alto + 'm</td>'
+        + '<td>' + nueva_aeronave.largo + 'm</td>'
+        + '<td><div class="d-flex justify-content-center">'
+        + '<button id="nuevo-avion-' + indice + '" type="button" class="btn btn-danger ms-2">'
+        + '<i class="far fa-trash-alt"></i></button></div></td>'
+        + '</tr>';
 
-    // aqui eventualmente la marca tiene y el modelo tiene que ser un object
-    // con el ID de la DB y el nombre para poder desplegarlo en la lista
-    var agregado = nuevos_ingresos.find(item => {
+    $('#ingreso-body').append(tr);
+}
+
+function agregar_avion() {
+    var serie = $('#Serie').val();
+
+    var agregado = ingreso.aeronaves.find(item => {
         return item.serie == serie
     }) !== undefined;
 
     if (!agregado) {
-        if (nuevos_ingresos.length === 0) {
+        if (ingreso.aeronaves.length === 0) {
             $('#ingreso-body').html("");
         }
 
-        nuevo_ingreso = {
-            tecnico: tecnico,
-            marca: marca,
-            modelo: modelo,
+        var nueva_aeronave = {
+            marca: {
+                id: $('#Marca').val(),
+                nombre: $('#Marca option:selected').text()
+            },
+            modelo: {
+                id: $('#Modelo').val(),
+                nombre: $('#Modelo option:selected').text()
+            },
             serie: serie,
-            nombre: nombre,
-            ancho: ancho,
-            alto: alto,
-            largo: largo
+            nombre: $('#Nombre').val(),
+            ancho: $('#Ancho').val(),
+            alto: $('#Alto').val(),
+            largo: $('#Largo').val()
         };
 
-        nuevos_ingresos.push(nuevo_ingreso);
-        var indice = nuevos_ingresos.length - 1;
-
-        var tr = '<tr id="nuevo-avion-tr' + indice + '">'
-            + '<td>' + nuevo_ingreso.marca + '</td>'
-            + '<td>' + nuevo_ingreso.modelo + '</td>'
-            + '<td>' + nuevo_ingreso.serie + '</td>'
-            + '<td>' + nuevo_ingreso.nombre + '</td>'
-            + '<td>' + nuevo_ingreso.ancho + 'm</td>'
-            + '<td>' + nuevo_ingreso.alto + 'm</td>'
-            + '<td>' + nuevo_ingreso.largo + 'm</td>'
-            + '<td><div class="d-flex justify-content-center">'
-            + '<button id="nuevo-avion-' + indice + '" type="button" class="btn btn-danger ms-2">'
-            + '<i class="far fa-trash-alt"></i></button></div></td>'
-            + '</tr>';
-
-        $('#ingreso-body').append(tr);
+        ingreso.aeronaves.push(nueva_aeronave);
+        var indice = ingreso.aeronaves.length - 1;
+        actualizar_tabla_aviones(indice, nueva_aeronave);
 
         $("#nuevo-avion-" + indice).on("click", function (event) {
             var posAvion = this.id.replace("nuevo-avion-", "");
-            nuevos_ingresos.splice(posAvion, 1);
+            ingreso.aeronaves.splice(posAvion, 1);
             $('#nuevo-avion-tr' + indice).remove();
         });
     } else {
-        $('#error_ingreso_msg').html("Ya se ha agregado un avión con el mismo número de serie anteriormente");
-        animate_feedback("error_formulario", 3000, 500, 500);
+        $('#error_ingreso_msg').html("Ya se ha agregado una aeronave con el mismo número de serie anteriormente");
+        animate_feedback("error_ingreso_msg", 3000, 500, 500);
     }
 }
 
@@ -148,11 +173,10 @@ function registrar_evento_agregar_avion() {
     $("#agregar").on('click', function (event) {
         event.preventDefault();
 
-        var form = $(".needs-validation")[0];
-        var validForms = form.checkValidity();
+        var form = $("#formulario_registro")[0];
         $(form).addClass("was-validated");
 
-        if (!validForms || !validar_datos_entrada()) {
+        if (!form.checkValidity() || !validar_datos_entrada()) {
             $('#error_formulario').html("Por favor revise el formulario y complete la información requerida antes de continuar");
             animate_feedback("error_formulario", 3000, 500, 500);
         } else {
@@ -163,17 +187,42 @@ function registrar_evento_agregar_avion() {
     });
 }
 
+function post_ingreso() {
+    $.ajax({
+        type: "POST",
+        url: "/api/aeronaves/ingresar",
+        data: JSON.stringify(ingreso),
+        success: function (data, status) {
+            limpiar_formulario('total');
+            animate_feedback("exito_registro", 3000, 500, 500);
+        },
+        error: function (data, status) {
+            window.location.replace("/Home/Error?errorMessage=" +
+                encodeURIComponent(data.responseText) + "&httpError=" +
+                encodeURIComponent(data.status + " " + data.statusText));
+        },
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+    });
+}
+
 function registrar_evento_enviar_formulario() {
     $("#enviar").on('click', function (event) {
         event.preventDefault();
 
-        if (nuevos_ingresos.length > 0) {
-            // enviar el formulario al backend con los datos de todos los aviones ingresados
-            // tengo que limpiar la tabla y el formulario
-            // nice to have: validar si hay algo en el formulario y no lo ha ingresado antes del save
-            animate_feedback("exito_registro", 3000, 500, 500);
-            $(form).removeClass("was-validated");
-            form.reset();
+        if (ingreso.aeronaves.length > 0) {
+            var tecnico = $('#Tecnico').val();
+            var formDatosGenerales = $('#formulario_general')[0];
+            $(formDatosGenerales).addClass("was-validated");
+
+            if (formDatosGenerales.checkValidity() && tecnico !== undefined && tecnico.trim() != '') {
+                ingreso.tecnico = tecnico;
+                post_ingreso();
+                $(formDatosGenerales).removeClass("was-validated");
+                formDatosGenerales.reset();
+            } else {
+                animate_feedback("error_registro", 3000, 500, 500);
+            }
         } else {
             animate_feedback("error_registro", 3000, 500, 500);
         }
