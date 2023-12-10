@@ -37,6 +37,7 @@ namespace GestionHerramientas.Properties
             public static readonly string _ColumnaRetirado = "retirado";
             public static readonly string _ColumnaTecnicoIngreso = "tecnico_ingreso";
             public static readonly string _ColumnaTecnicoRetiro = "tecnico_retiro";
+            public static readonly string _ColumnaRazonRetiro = "razon_retiro";
             public static readonly string _ColumnaPerdidaMaterial = "perdida_material";
             public static readonly string _ColumnaPerdidaHumana = "perdida_humana";
             public static readonly string _ColumnaFechaRegistro = "fecha_registro";
