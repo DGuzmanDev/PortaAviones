@@ -9,5 +9,9 @@ namespace PortaAviones.Interfaces
         List<Aeronave> Retirar(Retiro retiro);
 
         Aeronave BuscarPorSerie(string serie);
+
+        List<Aeronave> BuscarActivos();
+
+        List<ModeloAeronaveAgrupado> ContarModelosActivos();
     }
 }
