@@ -85,5 +85,31 @@ namespace PortaAviones.Servicios
                 throw new ArgumentException("El retiro es invalido", nameof(retiro));
             }
         }
+
+        public List<Aeronave> BuscarActivos()
+        {
+            try
+            {
+                return ConectorDeDatos.BuscarAeronavesActivas();
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine("Error buscando todas las aeronaves activas. Razon: " + error.Message);
+                throw;
+            }
+        }
+
+        public List<ModeloAeronaveAgrupado> ContarModelosActivos()
+        {
+            try
+            {
+                return ConectorDeDatos.ContarAeronavesAgrupadasPorModelo();
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine("Error contando todas aeronaves activas agrupadas por modelo. Razon: " + error.Message);
+                throw;
+            }
+        }
     }
 }

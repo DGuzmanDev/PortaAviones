@@ -14,6 +14,10 @@ namespace PortaAviones.Interfaces
 
         List<Modelo> BuscarModelosPorMarcaId(int marcaId);
 
+        List<Aeronave> BuscarAeronavesActivas();
+
+        List<ModeloAeronaveAgrupado> ContarAeronavesAgrupadasPorModelo();
+
         Aeronave BuscarAeronaveActivaPorSerie(string serie);
     }
 }

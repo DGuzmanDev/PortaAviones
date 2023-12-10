@@ -99,5 +99,41 @@ namespace PortaAviones.Controllers
             return aeronave;
 
         }
+
+        [HttpGet]
+        [Route("buscar/activos")]
+        public List<Aeronave> BuscarActivos()
+        {
+            List<Aeronave> resultado = new();
+
+            try
+            {
+                resultado = ServicioAeronaves.BuscarActivos();
+            }
+            catch (Exception error)
+            {
+                TopLevelErrorHandler.ManejarError(error, nameof(AeronavesController), nameof(BuscarActivos), _logger);
+            }
+
+            return resultado;
+        }
+
+        [HttpGet]
+        [Route("contar/agrupado/activos")]
+        public List<ModeloAeronaveAgrupado> ContarModelosActivos()
+        {
+            List<ModeloAeronaveAgrupado> resultado = new();
+
+            try
+            {
+                resultado = ServicioAeronaves.ContarModelosActivos();
+            }
+            catch (Exception error)
+            {
+                TopLevelErrorHandler.ManejarError(error, nameof(AeronavesController), nameof(BuscarActivos), _logger);
+            }
+
+            return resultado;
+        }
     }
 }

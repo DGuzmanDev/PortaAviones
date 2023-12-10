@@ -3,22 +3,49 @@ var ASC = "ASC";
 var ORDEN_SINTENSIS = DESC;
 var ORDEN_INVENTARIO = DESC;
 
-function cargar_inventario_sintetizado(lista) {
-    // TODO: Mandar HTTP request al backend para obtener la lista
-    if (lista.length > 0) {
+var inventario = [];
+var inventario_sintetizado = [];
+
+
+function mostrar_resultados_sintetizados(resultados) {
+    if (resultados.length > 0) {
         $('#sintesis_body').html("");
 
-        for (let index = 0; index < lista.length; index++) {
-            let registro = lista[index];
+        for (let index = 0; index < resultados.length; index++) {
+            let registro = resultados[index];
 
             var tr = '<tr>'
-                + '<td>' + registro.modelo + '</td>'
-                + '<td>' + registro.marca + '</td>'
+                + '<td>' + registro.modelo.nombre + '</td>'
+                + '<td>' + registro.marca.nombre + '</td>'
                 + '<td>' + registro.cuenta + '</td>'
                 + '</tr>';
 
             $('#sintesis_body').append(tr);
         }
+    } else {
+        $('#sintesis_body').html("<tr><td>No hay datos</td></tr>");
+    }
+}
+
+function mostrar_resultados_inventario(lista) {
+    if (lista.length > 0) {
+        $('#inventario_body').html("");
+        for (let index = 0; index < lista.length; index++) {
+            let registro = lista[index];
+
+            var tr = '<tr>'
+                + '<td>' + registro.modelo.nombre + '</td>'
+                + '<td>' + registro.marca.nombre + '</td>'
+                + '<td>' + registro.serie + '</td>'
+                + '<td>' + registro.nombre + '</td>'
+                + '<td>' + registro.fechaRegistro + '</td>'
+                + '<td>' + registro.tecnicoIngreso + '</td>'
+                + '</tr>';
+
+            $('#inventario_body').append(tr);
+        }
+    } else {
+        $('#inventario_body').html("<tr><td>No hay datos</td></tr>");
     }
 }
 
@@ -27,37 +54,16 @@ function ordenar_lista_sintesis(orden) {
     var lista = [];
 
     if (ORDEN_SINTENSIS === DESC) {
-        lista = inventario_sinstesis.sort(function (a, b) {
-            return a.modelo.localeCompare(b.modelo);
+        lista = inventario_sintetizado.sort(function (a, b) {
+            return a.modelo.nombre.localeCompare(b.modelo.nombre);
         });
     } else {
-        lista = inventario_sinstesis.sort(function (a, b) {
-            return b.modelo.localeCompare(a.modelo);
+        lista = inventario_sintetizado.sort(function (a, b) {
+            return b.modelo.nombre.localeCompare(a.modelo.nombre);
         });
     }
 
-    cargar_inventario_sintetizado(lista);
-}
-
-function cargar_inventario(lista) {
-    // TODO: Mandar HTTP request al backend para obtener la lista
-    if (lista.length > 0) {
-        $('#inventario_body').html("");
-        for (let index = 0; index < lista.length; index++) {
-            let registro = lista[index];
-
-            var tr = '<tr>'
-                + '<td>' + registro.modelo + '</td>'
-                + '<td>' + registro.marca + '</td>'
-                + '<td>' + registro.serie + '</td>'
-                + '<td>' + registro.nombre + '</td>'
-                + '<td>' + registro.fecha_ingreso + '</td>'
-                + '<td>' + registro.tecnico + '</td>'
-                + '</tr>';
-
-            $('#inventario_body').append(tr);
-        }
-    }
+    mostrar_resultados_sintetizados(lista);
 }
 
 function ordenar_lista_inventario(orden) {
@@ -66,15 +72,51 @@ function ordenar_lista_inventario(orden) {
 
     if (orden === DESC) {
         lista = inventario.sort(function (a, b) {
-            return a.modelo.localeCompare(b.modelo);
+            return a.modelo.nombre.localeCompare(b.modelo.nombre);
         });
     } else {
         lista = inventario.sort(function (a, b) {
-            return b.modelo.localeCompare(a.modelo);
+            return b.modelo.nombre.localeCompare(a.modelo.nombre);
         });
     }
 
-    cargar_inventario(lista);
+    mostrar_resultados_inventario(lista);
+}
+
+function cargar_inventario_sintetizado() {
+    $.ajax({
+        type: "GET",
+        url: "/api/Aeronaves/contar/agrupado/activos",
+        success: function (data, status) {
+            inventario_sintetizado = data;
+            ordenar_lista_sintesis(DESC);
+        },
+        error: function (data, status) {
+            window.location.replace("/Home/Error?errorMessage=" +
+                encodeURIComponent(data.responseText) + "&httpError=" +
+                encodeURIComponent(data.status + " " + data.statusText));
+        },
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+    });
+}
+
+function cargar_inventario() {
+    $.ajax({
+        type: "GET",
+        url: "/api/Aeronaves/buscar/activos",
+        success: function (data, status) {
+            inventario = data;
+            ordenar_lista_inventario(DESC);
+        },
+        error: function (data, status) {
+            window.location.replace("/Home/Error?errorMessage=" +
+                encodeURIComponent(data.responseText) + "&httpError=" +
+                encodeURIComponent(data.status + " " + data.statusText));
+        },
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+    });
 }
 
 function registrar_evento_orden_sinstesis() {
@@ -93,8 +135,8 @@ function registrar_evento_orden_inventario() {
 
 $(document).ready(function () {
     console.log('inventario.js JavaScript - Daniel Guzman Chaves - Programación Avanzanda en Web -  UNED IIIQ 2023');
-    ordenar_lista_sintesis(DESC);
-    ordenar_lista_inventario(DESC);
+    cargar_inventario_sintetizado();
+    cargar_inventario();
     registrar_evento_orden_sinstesis();
     registrar_evento_orden_inventario();
 });
