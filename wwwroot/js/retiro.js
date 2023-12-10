@@ -1,4 +1,8 @@
-var retiros = [];
+var retiro = {
+    tecnico: undefined,
+    razon: undefined,
+    aeronaves: []
+}
 var retiro_actual = {};
 
 function registrar_evento_modal() {
@@ -9,30 +13,38 @@ function registrar_evento_modal() {
     });
 }
 
+function limpiar_formulario() {
+    retiro = {
+        tecnico: undefined,
+        razon: undefined,
+        aeronaves: []
+    }
+    retiro_actual = {};
+    $('#retiros-body').html('');
+    $('#resultados').hide(500);
+
+    let forms = $(".needs-validation");
+    for (let index = 0; index < forms.length; index++) {
+        var form = forms[index];
+        $(form).removeClass("was-validated");
+        form.reset();
+    }
+}
+
 function registrar_evento_limpiar_formulario(tipo) {
     $('#limpiar_confirm').off('click');
     $('#limpiar_confirm').on('click', function (event) {
-        retiros = [];
-        retiro_actual = {};
-        $('#retiros-body').html('');
-        $('#resultados').hide(500);
-
-        let forms = $(".needs-validation");
-        for (let index = 0; index < forms.length; index++) {
-            var form = forms[index];
-            $(form).removeClass("was-validated");
-            form.reset();
-        }
-
+        limpiar_formulario();
         $("#close_confirm").trigger("click");
     });
 }
 
-function mostrar_resultado_busqueda() {
-    $('#Serie_Info').val(retiro_actual.serie);
-    $('#Nombre_Info').val(retiro_actual.nombre);
-    $('#Marca_Info').val(retiro_actual.marca);
-    $('#Modelo_Info').val(retiro_actual.modelo);
+function mostrar_resultado_busqueda(aeronave) {
+    retiro_actual = aeronave;
+    $('#Serie_Info').val(aeronave.serie);
+    $('#Nombre_Info').val(aeronave.nombre);
+    $('#Marca_Info').val(aeronave.marca.nombre);
+    $('#Modelo_Info').val(aeronave.modelo.nombre);
     $('#resultados').show(1000);
 }
 
@@ -49,41 +61,48 @@ function registrar_evento_buscar() {
         if (!validForms || serie === undefined && serie.trim() === '') {
             animate_feedback("error_formulario_busqueda", 3000, 500, 500);
         } else {
-            // TODO: AJAX request al BE
-            let avion = {
-                serie: "ABCDE-12345",
-                nombre: "Velo Zi Raptor",
-                marca: "Lockheed Martin",
-                modelo: "F-22 Raptor",
-                ancho: 15,
-                alto: 4,
-                largo: 30
-            };
-            retiro_actual = avion;
-            mostrar_resultado_busqueda();
-            $(form).removeClass("was-validated");
+            $.ajax({
+                type: "GET",
+                url: "/api/Aeronaves/buscar/serie/" + encodeURIComponent(serie),
+                success: function (data, status) {
+                    if (data.id !== undefined && data.serie != undefined) {
+                        mostrar_resultado_busqueda(data);
+                    } else {
+                        animate_feedback('error_no_records', 3000, 500, 500);
+                    }
+
+                    $(form).removeClass("was-validated");
+                },
+                error: function (data, status) {
+                    window.location.replace("/Home/Error?errorMessage=" +
+                        encodeURIComponent(data.responseText) + "&httpError=" +
+                        encodeURIComponent(data.status + " " + data.statusText));
+                },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+            });
         }
     });
 }
 
 function agregar_avion() {
-    var agregado = retiros.find(item => {
+    var agregado = retiro.aeronaves.find(item => {
         return item.serie == retiro_actual.serie
     }) !== undefined;
 
     if (!agregado) {
-        if (retiros.length === 0) {
+        if (retiro.aeronaves.length === 0) {
             $('#retiros-body').html("");
         }
 
-        retiros.push(retiro_actual);
-        var indice = retiros.length - 1;
+        retiro.aeronaves.push(retiro_actual);
+        var indice = retiro.aeronaves.length - 1;
 
         var tr = '<tr id="retiro-avion-' + indice + '">'
             + '<td>' + retiro_actual.serie + '</td>'
             + '<td>' + retiro_actual.nombre + '</td>'
-            + '<td>' + retiro_actual.marca + '</td>'
-            + '<td>' + retiro_actual.modelo + '</td>'
+            + '<td>' + retiro_actual.marca.nombre + '</td>'
+            + '<td>' + retiro_actual.modelo.nombre + '</td>'
             + '<td>' + retiro_actual.ancho + 'm</td>'
             + '<td>' + retiro_actual.alto + 'm</td>'
             + '<td>' + retiro_actual.largo + 'm</td>'
@@ -96,11 +115,11 @@ function agregar_avion() {
 
         $("#retiro-avion-" + indice).on("click", function (event) {
             var posAvion = this.id.replace("retiro-avion-", "");
-            retiros.splice(posAvion, 1);
+            retiro.aeronaves.splice(posAvion, 1);
             $('#' + this.id).remove();
         });
     } else {
-        $('#error_retiro_msg').html("Ya se ha agregado un avión con el mismo número de serie anteriormente");
+        $('#error_retiro_msg').html("Ya se ha agregado esta arenove para retiro");
         animate_feedback("error_retiro", 3000, 500, 500);
     }
 }
@@ -123,15 +142,30 @@ function registrar_evento_enviar_formulario() {
 
         let form = $("#formulario_detalles")[0];
         $(form).addClass("was-validated");
+        var tecnico = $('#Tecnico').val();
+        var razon = $('#Detalle').val();
 
-        if (form.checkValidity() && retiros.length > 0) {
-            // TODO enviar el formulario al backend con los datos de todos los aviones ingresados
-            $('#retiros-body').html("");
-            retiros = [];
-            retiro_actual = {};
-            animate_feedback("exito_registro", 3000, 500, 500);
-            $(form).removeClass("was-validated");
-            form.reset();
+        if (form.checkValidity() && retiro.aeronaves.length > 0 && tecnico !== undefined && tecnico.trim() !== ''
+            && razon !== undefined && razon.trim() !== '') {
+            retiro.tecnico = tecnico;
+            retiro.razon = razon;
+
+            $.ajax({
+                type: "PUT",
+                url: "/api/Aeronaves/retirar",
+                data: JSON.stringify(retiro),
+                success: function (data, status) {
+                    limpiar_formulario('total');
+                    animate_feedback("exito_registro", 3000, 500, 500);
+                },
+                error: function (data, status) {
+                    window.location.replace("/Home/Error?errorMessage=" +
+                        encodeURIComponent(data.responseText) + "&httpError=" +
+                        encodeURIComponent(data.status + " " + data.statusText));
+                },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+            });
         } else {
             animate_feedback("error_registro", 3000, 500, 500);
         }

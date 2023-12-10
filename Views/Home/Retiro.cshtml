@@ -83,7 +83,7 @@
                 <fieldset>
                     <div class="row mb-3">
                         <div class="col-sm">
-                            <label class="form-label" for="Serie">Número de serie:</label>
+                            <label class="form-label" for="Serie">Número de serie de la aeronave:</label>
                         </div>
                     </div>
                     <div class="row">
@@ -91,6 +91,9 @@
                             <input class="form-control" type="text" name="Serie" id="Serie" required />
                             <div class="invalid-feedback" id="error_serie">
                                 El número de serie es requerido
+                            </div>
+                            <div class="invalid-feedback" id="error_no_records">
+                                No se han encontrado aeronaves elegibles para retiro con esta serie
                             </div>
                         </div>
                         <div class="col-sm-4">
@@ -133,7 +136,7 @@
             </div>
             <div id="botones" class="row pt-2 mb-3">
                 <div class="col-sm-12">
-                    <button class="btn btn-success w-100" type="submit" id="agregar" form="formulario_detalles">
+                    <button class="btn btn-success w-100" type="submit" id="agregar" form="formulario_busqueda">
                         Agregar retiro <i class="fa-solid fa-plane-circle-xmark px-4"></i>
                     </button>
                 </div>

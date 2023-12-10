@@ -15,6 +15,7 @@ namespace PortaAviones.Models
         public int? PerdidaHumana { get; set; }
         public string? TecnicoIngreso { get; set; }
         public string? TecnicoRetiro { get; set; }
+        public string? RazonRetiro { get; set; }
         public DateTime? FechaRegistro { get; set; }
         public DateTime? FechaActualizacion { get; set; }
 
@@ -31,7 +32,7 @@ namespace PortaAviones.Models
 
         public Aeronave(int? id, string? serie, Marca? marca, Modelo? modelo, string? nombre, double? ancho,
             double? alto, double? largo, bool? retirado, bool? perdidaMaterial, int? perdidaHumana,
-            string? tecnicoIngreso, string? tecnicoRetiro, DateTime? fechaRegistro, DateTime? fechaActualizacion)
+            string? tecnicoIngreso, string? tecnicoRetiro, string? razonRetiro, DateTime? fechaRegistro, DateTime? fechaActualizacion)
         {
             Id = id;
             Serie = serie;
@@ -46,6 +47,7 @@ namespace PortaAviones.Models
             PerdidaHumana = perdidaHumana;
             TecnicoIngreso = tecnicoIngreso;
             TecnicoRetiro = tecnicoRetiro;
+            RazonRetiro = razonRetiro;
             FechaRegistro = fechaRegistro;
             FechaActualizacion = fechaActualizacion;
         }

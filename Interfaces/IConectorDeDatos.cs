@@ -8,8 +8,12 @@ namespace PortaAviones.Interfaces
     {
         List<Aeronave> RegistrarNuevoIngreso(Ingreso ingreso);
 
+        List<Aeronave> RegistrarRetiro(Retiro retiro);
+
         List<Marca> BuscarMarcas();
 
         List<Modelo> BuscarModelosPorMarcaId(int marcaId);
+
+        Aeronave BuscarAeronaveActivaPorSerie(string serie);
     }
 }
