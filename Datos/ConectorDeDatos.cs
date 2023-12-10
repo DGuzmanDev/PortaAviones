@@ -89,7 +89,6 @@ namespace PortaAviones.Datos
             }
         }
 
-
         public List<Modelo> BuscarModelosPorMarcaId(int marcaId)
         {
 
@@ -118,7 +117,6 @@ namespace PortaAviones.Datos
             }
         }
 
-
         public Aeronave BuscarAeronaveActivaPorSerie(string serie)
         {
             if (!StringUtils.IsEmpty(serie))
@@ -144,19 +142,6 @@ namespace PortaAviones.Datos
             {
                 throw new ArgumentException("La serie provista en invalida", nameof(serie));
             }
-        }
-
-        private Aeronave BuscarAeronaveActivaPorSerie(string serie, SqlConnection connection)
-        {
-            Aeronave aeronave = RepositorioAeronave.BuscarActivaPorSerie(serie, connection);
-
-            if (aeronave != null && aeronave.Id != null && aeronave.Serie != null)
-            {
-                aeronave.Marca = RepositorioMarca.BuscarPorId(aeronave.Marca.Id.Value, connection);
-                aeronave.Modelo = RepositorioModelo.BuscarPorId(aeronave.Modelo.Id.Value, connection);
-            }
-
-            return aeronave;
         }
 
         public List<Aeronave> RegistrarRetiro(Retiro retiro)
@@ -225,7 +210,13 @@ namespace PortaAviones.Datos
             try
             {
                 connection.Open();
-                return RepositorioAeronave.BuscarTodosPorRetiro(false, connection);
+                List<Aeronave> aeronaves = RepositorioAeronave.BuscarTodosPorRetiro(false, connection);
+                aeronaves.ForEach(aeronave =>
+                {
+                    aeronave.Marca = RepositorioMarca.BuscarPorId(aeronave.Marca.Id.Value, connection);
+                    aeronave.Modelo = RepositorioModelo.BuscarPorId(aeronave.Modelo.Id.Value, connection);
+                });
+                return aeronaves;
             }
             catch (Exception exception)
             {
@@ -236,6 +227,19 @@ namespace PortaAviones.Datos
             {
                 connection.Close();
             }
+        }
+
+        private Aeronave BuscarAeronaveActivaPorSerie(string serie, SqlConnection connection)
+        {
+            Aeronave aeronave = RepositorioAeronave.BuscarActivaPorSerie(serie, connection);
+
+            if (aeronave != null && aeronave.Id != null && aeronave.Serie != null)
+            {
+                aeronave.Marca = RepositorioMarca.BuscarPorId(aeronave.Marca.Id.Value, connection);
+                aeronave.Modelo = RepositorioModelo.BuscarPorId(aeronave.Modelo.Id.Value, connection);
+            }
+
+            return aeronave;
         }
 
     }

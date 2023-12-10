@@ -35,7 +35,8 @@ namespace PortaAviones.Datos.Repositorio
                     + " WHERE aeronave." + PropiedadesBD.Aeronave._ColumnaRetirado + " = @retirado"
                     + " GROUP BY aeronave." + PropiedadesBD.Aeronave._ColumnaModeloFk
                     + ", marca." + PropiedadesBD.Marca._ColumnaNombre
-                    + ", modelo." + PropiedadesBD.Modelo._ColumnaNombre;
+                    + ", modelo." + PropiedadesBD.Modelo._ColumnaNombre
+                    + " ORDER BY modelo.nombre DESC";
 
         private static readonly string INSERT_AERONAVE = "INSERT INTO " + PropiedadesBD._BaseDeDatos + "."
                     + PropiedadesBD._Esquema + "."
