@@ -18,6 +18,24 @@ namespace PortaAviones.Datos.Repositorio
                     + PropiedadesBD._TablaAeronave
                     + " WHERE " + PropiedadesBD.Aeronave._ColumnaSerie + " = @serie";
 
+        private static readonly string SELECT_AERONAVE_POR_RETIRO = "SELECT * FROM " + PropiedadesBD._BaseDeDatos + "."
+            + PropiedadesBD._Esquema + "."
+            + PropiedadesBD._TablaAeronave
+            + " WHERE " + PropiedadesBD.Aeronave._ColumnaRetirado + " = @retirado";
+
+        private static readonly string SELECT_AERONAVES_CUENTA_POR_MODELO = "SELECT modelo.nombre AS " + ModeloAeronaveAgrupado._AgrupadoModelo
+                    + ", marca.nombre AS " + ModeloAeronaveAgrupado._AgrupadoMarca + "," +
+                    " COUNT(aeronave.id) AS " + ModeloAeronaveAgrupado._AgrupadoCuenta + " FROM " + PropiedadesBD._BaseDeDatos + "."
+                    + PropiedadesBD._Esquema + "." + PropiedadesBD._TablaAeronave
+                    + " JOIN " + PropiedadesBD._BaseDeDatos + "." + PropiedadesBD._Esquema + "." + PropiedadesBD._TablaMarca
+                    + " marca ON marca." + PropiedadesBD.Marca._ColumnaId + " = aeronave." + PropiedadesBD.Aeronave._ColumnaMarcaFk
+                    + " JOIN " + PropiedadesBD._BaseDeDatos + "." + PropiedadesBD._Esquema + "." + PropiedadesBD._TablaModelo
+                    + " modelo ON modelo." + PropiedadesBD.Modelo._ColumnaId + " = aeronave." + PropiedadesBD.Aeronave._ColumnaModeloFk
+                    + " WHERE aeronave." + PropiedadesBD.Aeronave._ColumnaRetirado + " = @retirado"
+                    + " GROUP BY aeronave." + PropiedadesBD.Aeronave._ColumnaModeloFk
+                    + ", marca." + PropiedadesBD.Marca._ColumnaNombre
+                    + ", modelo." + PropiedadesBD.Modelo._ColumnaNombre;
+
         private static readonly string INSERT_AERONAVE = "INSERT INTO " + PropiedadesBD._BaseDeDatos + "."
                     + PropiedadesBD._Esquema + "."
                     + PropiedadesBD._TablaAeronave + "("
@@ -55,6 +73,23 @@ namespace PortaAviones.Datos.Repositorio
             }
         }
 
+        public List<ModeloAeronaveAgrupado> ContarModelos(SqlConnection sqlConnection, bool retirado)
+        {
+
+            SqlCommand select = new(SELECT_AERONAVES_CUENTA_POR_MODELO, sqlConnection);
+            select.Parameters.Add("@retirado", SqlDbType.Bit).Value = retirado;
+
+            SqlDataReader sqlDataReader = select.ExecuteReader();
+            List<ModeloAeronaveAgrupado> agrupados = new();
+            while (sqlDataReader.Read())
+            {
+                agrupados.Add(LeerRegistroModelo(sqlDataReader));
+            }
+
+            sqlDataReader.Close();
+            return agrupados;
+        }
+
         public void GuardarTodos(List<Aeronave> aeronaves, SqlConnection connection, TransactionScope tx)
         {
             if (!aeronaves.IsNullOrEmpty())
@@ -79,6 +114,23 @@ namespace PortaAviones.Datos.Repositorio
             {
                 throw new ArgumentException("La lista de Aeronaves es invalida");
             }
+        }
+
+        public List<Aeronave> BuscarTodosPorRetiro(bool retirado, SqlConnection sqlConnection)
+        {
+
+            SqlCommand select = new(SELECT_AERONAVE_POR_RETIRO, sqlConnection);
+            select.Parameters.Add("@retirado", SqlDbType.Bit).Value = retirado;
+
+            SqlDataReader sqlDataReader = select.ExecuteReader();
+            List<Aeronave> aeronaves = new();
+            while (sqlDataReader.Read())
+            {
+                aeronaves.Add(LeerRegistro(sqlDataReader));
+            }
+
+            sqlDataReader.Close();
+            return aeronaves;
         }
 
 
@@ -132,5 +184,12 @@ namespace PortaAviones.Datos.Repositorio
                 decimal.ToDouble(largo), retirado, perdidaMaterial, perdidaHumana, tecnicoIngreso, tecnicoRetiro, fechaRegistro, fechaActualizacion);
         }
 
+        private static ModeloAeronaveAgrupado LeerRegistroModelo(SqlDataReader sqlDataReader)
+        {
+            string modelo = (string)sqlDataReader[ModeloAeronaveAgrupado._AgrupadoModelo];
+            string marca = (string)sqlDataReader[ModeloAeronaveAgrupado._AgrupadoMarca];
+            int cuenta = (int)sqlDataReader[ModeloAeronaveAgrupado._AgrupadoCuenta];
+            return new(cuenta, new Marca(null, marca), new Modelo(null, modelo, null));
+        }
     }
 }

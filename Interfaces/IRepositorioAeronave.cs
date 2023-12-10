@@ -8,6 +8,10 @@ namespace PortaAviones.Interfaces
     {
         Aeronave BuscarPorSerie(string serie, SqlConnection sqlConnection);
 
+        List<ModeloAeronaveAgrupado> ContarModelos(SqlConnection sqlConnection, bool retirado);
+
+        List<Aeronave> BuscarTodosPorRetiro(bool retirado, SqlConnection sqlConnection);
+
         void GuardarTodos(List<Aeronave> aeronaves, SqlConnection sqlConnection, TransactionScope txScope);
     }
 }

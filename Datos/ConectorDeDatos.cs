@@ -24,54 +24,6 @@ namespace PortaAviones.Datos
             RepositorioModelo = new RepositorioModelo();
         }
 
-        public List<Marca> BuscarMarcas()
-        {
-            SqlConnection connection = ConexionSQLServer.ObenerConexion();
-
-            try
-            {
-                connection.Open();
-                return RepositorioMarca.BuscarTodos(connection);
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error buscando Marcas. Razon: " + exception.Message);
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-
-        public List<Modelo> BuscarModelosPorMarcaId(int marcaId)
-        {
-
-            if (marcaId > 0)
-            {
-                SqlConnection connection = ConexionSQLServer.ObenerConexion();
-
-                try
-                {
-                    connection.Open();
-                    return RepositorioModelo.BuscarPorMarca(marcaId, connection);
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine("Error buscando Modelos por Marca ID. Razon: " + exception.Message);
-                    throw;
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-            else
-            {
-                throw new ArgumentNullException(nameof(marcaId), "El ID de Marca provisto no es valido");
-            }
-        }
-
         public List<Aeronave> RegistrarNuevoIngreso(Ingreso ingreso)
         {
             if (ingreso != null && !ingreso.Aeronaves.IsNullOrEmpty())
@@ -120,6 +72,97 @@ namespace PortaAviones.Datos
                 throw new ArgumentNullException(nameof(ingreso), "El objeto Ingreso es invalido");
             }
         }
+
+        public List<Marca> BuscarMarcas()
+        {
+            SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+            try
+            {
+                connection.Open();
+                return RepositorioMarca.BuscarTodos(connection);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("Error buscando Marcas. Razon: " + exception.Message);
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public List<Modelo> BuscarModelosPorMarcaId(int marcaId)
+        {
+
+            if (marcaId > 0)
+            {
+                SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+                try
+                {
+                    connection.Open();
+                    return RepositorioModelo.BuscarPorMarca(marcaId, connection);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("Error buscando Modelos por Marca ID. Razon: " + exception.Message);
+                    throw;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(marcaId), "El ID de Marca provisto no es valido");
+            }
+        }
+
+        public List<ModeloAeronaveAgrupado> ContarAeronavesAgrupadasPorModelo()
+        {
+
+            SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+            try
+            {
+                connection.Open();
+                return RepositorioAeronave.ContarModelos(connection, false);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("Error buscando Aeronaves activas. Razon: " + exception.Message);
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        public List<Aeronave> BuscarAeronavesActivas()
+        {
+            SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+            try
+            {
+                connection.Open();
+                return RepositorioAeronave.BuscarTodosPorRetiro(false, connection);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("Error buscando Aeronaves activas. Razon: " + exception.Message);
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+
     }
 }
 
