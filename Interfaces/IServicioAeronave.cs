@@ -1,0 +1,13 @@
+using PortaAviones.Models;
+
+namespace PortaAviones.Interfaces
+{
+    public interface IServicioAeronave
+    {
+        List<Aeronave> Ingresar(Ingreso ingreso);
+
+        Retiro Retirar(Retiro retiro);
+
+        Aeronave BuscarPorSerie(string serie);
+    }
+}

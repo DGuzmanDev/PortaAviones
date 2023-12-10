@@ -34,12 +34,12 @@
     </div>
 </div>
 
-<section id="formulario">
-    <div class="container">
+<section id="formulario_datos_generales">
+    <article class="container">
         <div class="row">
-            <legend class="my-2">Datos del nuevo ingreso</legend>
+            <legend class="my-2">Datos generales del ingreso</legend>
             <div class="col-sm border rounded">
-                <form id="formulario_registro" class="needs-validation py-2">
+                <form id="formulario_general" class="needs-validation py-2">
                     <fieldset>
                         <div class="row mb-3">
                             <div class="col-sm-6">
@@ -50,6 +50,20 @@
                                 </div>
                             </div>
                         </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </article>
+</section>
+
+<section id="formulario_aeronave">
+    <div class="container">
+        <div class="row">
+            <legend class="my-2">Datos de la aeronave</legend>
+            <div class="col-sm border rounded">
+                <form id="formulario_registro" class="needs-validation py-2">
+                    <fieldset>
                         <div class="row mb-3">
                             <div class="col-sm-6">
                                 <label class="form-label" for="Marca">Marca</label>
@@ -177,14 +191,14 @@
 </section>
 
 <section id="botones_accion" class="container mt-4">
-    <div class="invalid-feedback" id="error_registro">
+    <div class="invalid-feedback mb-3" id="error_registro">
         <div class="d-flex justify-content-center my-4">
-            Por favor ingrese los datos de al menos un avión para poder continuar con el proceso
+            Por favor ingrese todos los datos requeridos para poder continuar con el proceso
         </div>
     </div>
-    <div class="valid-feedback" id="exito_registro">
+    <div class="valid-feedback mb-3" id="exito_registro">
         <div class="d-flex justify-content-center my-4">
-            El registro de los nuevos ingresos se ha completado con éxito
+            El registro del nuevo ingreso se ha completado con éxito
         </div>
     </div>
     <div class="row my-3 py-3">
