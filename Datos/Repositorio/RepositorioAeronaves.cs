@@ -16,7 +16,8 @@ namespace PortaAviones.Datos.Repositorio
         private static readonly string SELECT_AERONAVE_POR_SERIE = "SELECT * FROM " + PropiedadesBD._BaseDeDatos + "."
                     + PropiedadesBD._Esquema + "."
                     + PropiedadesBD._TablaAeronave
-                    + " WHERE " + PropiedadesBD.Aeronave._ColumnaSerie + " = @serie";
+                    + " WHERE " + PropiedadesBD.Aeronave._ColumnaSerie + " = @serie"
+                    + " AND " + PropiedadesBD.Aeronave._ColumnaRetirado + " = 0";
 
         private static readonly string INSERT_AERONAVE = "INSERT INTO " + PropiedadesBD._BaseDeDatos + "."
                     + PropiedadesBD._Esquema + "."
@@ -31,7 +32,18 @@ namespace PortaAviones.Datos.Repositorio
                     + PropiedadesBD.Aeronave._ColumnaTecnicoIngreso
                     + ") VALUES (@serie, @nombre, @alto, @ancho, @largo, @marca, @modelo, @tecnico)";
 
-        public Aeronave BuscarPorSerie(string serie, SqlConnection sqlConnection)
+        private static readonly string UPDATE_AERONAVE = "UPDATE " + PropiedadesBD._BaseDeDatos + "."
+                    + PropiedadesBD._Esquema + "."
+                    + PropiedadesBD._TablaAeronave
+                    + " SET " + PropiedadesBD.Aeronave._ColumnaRetirado + " = @retirado,"
+                    + PropiedadesBD.Aeronave._ColumnaTecnicoRetiro + " = @tecnicoRetiro,"
+                    + PropiedadesBD.Aeronave._ColumnaPerdidaMaterial + " = @perdidaMaterial,"
+                    + PropiedadesBD.Aeronave._ColumnaPerdidaHumana + " = @perdidaHumana,"
+                    + PropiedadesBD.Aeronave._ColumnaRazonRetiro + " = @razon,"
+                    + PropiedadesBD.Aeronave._ColumnaFechaActualizacion + " = @fechaActualizacion "
+                    + "WHERE " + PropiedadesBD.Aeronave._ColumnaId + " = @id";
+
+        public Aeronave BuscarActivaPorSerie(string serie, SqlConnection sqlConnection)
         {
             if (!StringUtils.IsEmpty(serie))
             {
@@ -81,6 +93,32 @@ namespace PortaAviones.Datos.Repositorio
             }
         }
 
+        public void ActualizarTodos(List<Aeronave> aeronaves, SqlConnection sqlConnection, TransactionScope txScope)
+        {
+            if (!aeronaves.IsNullOrEmpty())
+            {
+                int registros = 0;
+                aeronaves.ForEach(aeronave =>
+                {
+                    EjecutarUpdate(aeronave, sqlConnection);
+                    registros++;
+                });
+
+                if (registros == aeronaves.Count)
+                {
+                    txScope.Complete();//Commit de todos los UPDATE
+                }
+                else
+                {
+                    throw new DataBaseError.ErrorDeConsistenciaDeDatos("No se pudieron actualizar todas las Aeronaves");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("La lista de Aeronaves es invalida");
+            }
+        }
+
 
         private static int EjecutarInsert(Aeronave aeronave, SqlConnection sqlConnection, TransactionScope? tx)
         {
@@ -111,6 +149,19 @@ namespace PortaAviones.Datos.Repositorio
             return rowsAffected;
         }
 
+        private static int EjecutarUpdate(Aeronave aeronave, SqlConnection sqlConnection)
+        {
+            SqlCommand insert = new(UPDATE_AERONAVE, sqlConnection);
+            insert.Parameters.Add("@retirado", SqlDbType.Bit).Value = aeronave.Retirado;
+            insert.Parameters.Add("@tecnicoRetiro", SqlDbType.VarChar).Value = aeronave.TecnicoRetiro;
+            insert.Parameters.Add("@perdidaMaterial", SqlDbType.Bit).Value = aeronave.PerdidaMaterial;
+            insert.Parameters.Add("@perdidaHumana", SqlDbType.Int).Value = aeronave.PerdidaHumana;
+            insert.Parameters.Add("@razon", SqlDbType.VarChar).Value = aeronave.RazonRetiro;
+            insert.Parameters.Add("@fechaActualizacion", SqlDbType.DateTime2).Value = DateTime.Now;
+            insert.Parameters.Add("@id", SqlDbType.Int).Value = aeronave.Id;
+            return insert.ExecuteNonQuery();
+        }
+
         private static Aeronave LeerRegistro(SqlDataReader sqlDataReader)
         {
             int id = (int)sqlDataReader[PropiedadesBD.Aeronave._ColumnaId];
@@ -123,14 +174,16 @@ namespace PortaAviones.Datos.Repositorio
             int modelo = (int)sqlDataReader[PropiedadesBD.Aeronave._ColumnaModeloFk];
             string tecnicoIngreso = (string)sqlDataReader[PropiedadesBD.Aeronave._ColumnaTecnicoIngreso];
             string? tecnicoRetiro = DBUtil.ConvertFromDBVal<string>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaTecnicoRetiro]);
+            string? razonRetiro = DBUtil.ConvertFromDBVal<string>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaRazonRetiro]);
             bool? retirado = DBUtil.ConvertFromDBVal<bool>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaRetirado]);
             bool? perdidaMaterial = DBUtil.ConvertFromDBVal<bool>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaPerdidaMaterial]);
             int? perdidaHumana = DBUtil.ConvertFromDBVal<int>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaPerdidaHumana]);
             DateTime fechaRegistro = (DateTime)sqlDataReader[PropiedadesBD.Aeronave._ColumnaFechaRegistro];
             DateTime fechaActualizacion = (DateTime)sqlDataReader[PropiedadesBD.Aeronave._ColumnaFechaActualizacion];
             return new(id, serie, new Marca(marca, null), new Modelo(modelo, null, marca), nombre, decimal.ToDouble(ancho), decimal.ToDouble(alto),
-                decimal.ToDouble(largo), retirado, perdidaMaterial, perdidaHumana, tecnicoIngreso, tecnicoRetiro, fechaRegistro, fechaActualizacion);
+                decimal.ToDouble(largo), retirado, perdidaMaterial, perdidaHumana, tecnicoIngreso, tecnicoRetiro, razonRetiro, fechaRegistro, fechaActualizacion);
         }
+
 
     }
 }

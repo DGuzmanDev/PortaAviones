@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using PortaAviones.Datos.Repositorio;
 using PortaAviones.Interfaces;
 using PortaAviones.Models;
+using PortaAviones.Util;
 
 namespace PortaAviones.Datos
 {
@@ -88,12 +89,7 @@ namespace PortaAviones.Datos
 
                         ingreso.Aeronaves.ForEach(aeronave =>
                         {
-                            Marca marca = RepositorioMarca.BuscarPorId(aeronave.Marca.Id.Value, connection);
-                            Modelo modelo = RepositorioModelo.BuscarPorId(aeronave.Modelo.Id.Value, connection);
-                            Aeronave nuevoRegistro = RepositorioAeronave.BuscarPorSerie(aeronave.Serie, connection);
-                            nuevoRegistro.Marca = marca;
-                            nuevoRegistro.Modelo = modelo;
-                            registros.Add(nuevoRegistro);
+                            registros.Add(BuscarAeronaveActivaPorSerie(aeronave.Serie, connection));
                         });
 
                         return registros;
@@ -118,6 +114,84 @@ namespace PortaAviones.Datos
             else
             {
                 throw new ArgumentNullException(nameof(ingreso), "El objeto Ingreso es invalido");
+            }
+        }
+
+        public Aeronave BuscarAeronaveActivaPorSerie(string serie)
+        {
+            if (!StringUtils.IsEmpty(serie))
+            {
+                SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+                try
+                {
+                    connection.Open();
+                    return BuscarAeronaveActivaPorSerie(serie, connection);
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Error buscando Aeronave por serie. Razon: " + error.Message);
+                    throw;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+            else
+            {
+                throw new ArgumentException("La serie provista en invalida", nameof(serie));
+            }
+        }
+
+        private Aeronave BuscarAeronaveActivaPorSerie(string serie, SqlConnection connection)
+        {
+            Aeronave aeronave = RepositorioAeronave.BuscarActivaPorSerie(serie, connection);
+
+            if (aeronave != null && aeronave.Id != null && aeronave.Serie != null)
+            {
+                aeronave.Marca = RepositorioMarca.BuscarPorId(aeronave.Marca.Id.Value, connection);
+                aeronave.Modelo = RepositorioModelo.BuscarPorId(aeronave.Modelo.Id.Value, connection);
+            }
+
+            return aeronave;
+        }
+
+        public List<Aeronave> RegistrarRetiro(Retiro retiro)
+        {
+            if (retiro != null && !retiro.Aeronaves.IsNullOrEmpty())
+            {
+                using (TransactionScope tx = new(TransactionScopeOption.RequiresNew))
+                {
+                    SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+                    try
+                    {
+                        connection.Open();
+                        RepositorioAeronave.ActualizarTodos(retiro.Aeronaves, connection, tx);
+                        List<Aeronave> registros = new();
+
+                        retiro.Aeronaves.ForEach(aeronave =>
+                        {
+                            registros.Add(BuscarAeronaveActivaPorSerie(aeronave.Serie, connection));
+                        });
+
+                        return registros;
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine("Error registrando nuevo Retiro. Razon: " + exception.Message);
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(retiro), "El objeto Ingreso es invalido");
             }
         }
     }

@@ -6,7 +6,7 @@ namespace PortaAviones.Interfaces
     {
         List<Aeronave> Ingresar(Ingreso ingreso);
 
-        Retiro Retirar(Retiro retiro);
+        List<Aeronave> Retirar(Retiro retiro);
 
         Aeronave BuscarPorSerie(string serie);
     }

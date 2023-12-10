@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PortaAviones.Interfaces;
 using PortaAviones.Models;
 using PortaAviones.Servicios;
+using PortaAviones.Util;
 
 namespace PortaAviones.Controllers
 {
@@ -46,6 +47,57 @@ namespace PortaAviones.Controllers
             }
 
             return respuesta;
+        }
+
+        [HttpPut]
+        [Route("retirar")]
+        public List<Aeronave> PutRetiro([FromBody] Retiro retiro)
+        {
+            if (retiro != null)
+            {
+                List<Aeronave> resultado = new();
+
+                try
+                {
+                    resultado = ServicioAeronaves.Retirar(retiro);
+                }
+                catch (Exception error)
+                {
+                    TopLevelErrorHandler.ManejarError(error, nameof(AeronavesController), nameof(PutRetiro), _logger);
+                }
+
+                return resultado;
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(retiro), "El cuerpo de la solicitud no es valido");
+            }
+        }
+
+        [HttpGet]
+        [Route("buscar/serie/{serie}")]
+        public Aeronave BuscarAeronavePorSerie([FromRoute] string serie)
+        {
+            Aeronave aeronave = new();
+
+            try
+            {
+                if (!StringUtils.IsEmpty(serie))
+                {
+                    return ServicioAeronaves.BuscarPorSerie(serie);
+                }
+                else
+                {
+                    throw new ArgumentException("La serie provista no es valida", nameof(serie));
+                }
+            }
+            catch (Exception exception)
+            {
+                TopLevelErrorHandler.ManejarError(exception, nameof(AeronavesController), nameof(BuscarAeronavePorSerie), _logger);
+            }
+
+            return aeronave;
+
         }
     }
 }
