@@ -12,6 +12,7 @@ namespace PortaAviones.Datos
 {
     public class ConectorDeDatos : IConectorDeDatos
     {
+        private static readonly string SELECT_YEAR = "SELECT YEAR(GETDATE())";
         private static readonly string MENSAJE_UNIQ_KEY_VIOLATION = "Violation of UNIQUE KEY constraint";
 
         private readonly IRepositorioMarca RepositorioMarca;
@@ -315,8 +316,7 @@ namespace PortaAviones.Datos
 
         private static string ObtenerAnnioSqlServer(SqlConnection sqlConnection)
         {
-            string selectStmt = "SELECT YEAR(GETDATE())";
-            SqlCommand select = new(selectStmt, sqlConnection);
+            SqlCommand select = new(SELECT_YEAR, sqlConnection);
             SqlDataReader sqlDataReader = select.ExecuteReader();
 
             try

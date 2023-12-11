@@ -26,6 +26,17 @@ CREATE TABLE PortaAviones.PortaAviones.marca(
     CONSTRAINT marca_nombre_UN UNIQUE (nombre)
 );
 
+CREATE TABLE PortaAviones.PortaAviones.despegue(
+    codigo varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    id int IDENTITY (1, 1) NOT NULL,
+    tecnico varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    mision varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    fecha_registro datetime2(0) DEFAULT getdate() NOT NULL,
+    fecha_despegue datetime2(0) NOT NULL,
+    CONSTRAINT despegue_PK PRIMARY KEY (id),
+    CONSTRAINT despegue_UN UNIQUE (codigo)
+);
+
 CREATE TABLE PortaAviones.PortaAviones.modelo(
     id int IDENTITY (1, 1) NOT NULL,
     nombre varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
@@ -51,10 +62,21 @@ CREATE TABLE PortaAviones.PortaAviones.aeronave(
     tecnico_retiro varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
     perdida_material bit DEFAULT 0 NOT NULL,
     perdida_humana int NULL,
+    razon_retiro varchar(500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
     CONSTRAINT aeronave_PK PRIMARY KEY (id),
     CONSTRAINT aeronave_serie_UN UNIQUE (serie),
     CONSTRAINT aeronave_marca_FK FOREIGN KEY (marca_fk) REFERENCES PortaAviones.PortaAviones.marca(id),
     CONSTRAINT modelo_FK FOREIGN KEY (modelo_fk) REFERENCES PortaAviones.PortaAviones.modelo(id)
+);
+
+CREATE TABLE PortaAviones.PortaAviones.aeronaves_despegue(
+    id int IDENTITY (1, 1) NOT NULL,
+    despegue_fk int NOT NULL,
+    aeronave_fk int NOT NULL,
+    piloto varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT aeronaves_despegue_PK PRIMARY KEY (id),
+    CONSTRAINT despegue_FK FOREIGN KEY (despegue_fk) REFERENCES PortaAviones.PortaAviones.despegue(id),
+    CONSTRAINT despegue_aeronave_FK FOREIGN KEY (id) REFERENCES PortaAviones.PortaAviones.aeronave(id)
 );
 
 CREATE SEQUENCE PortaAviones.secuencia_despegues
