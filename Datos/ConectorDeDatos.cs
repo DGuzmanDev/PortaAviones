@@ -17,12 +17,16 @@ namespace PortaAviones.Datos
         private readonly IRepositorioMarca RepositorioMarca;
         private readonly IRepositorioModelo RepositorioModelo;
         private readonly IRepositorioAeronave RepositorioAeronave;
+        private readonly IRepositorioDespegue RepositorioDespegue;
+        private readonly IRepositorioDespegueAeronave RepositorioDespegueAeronave;
 
         public ConectorDeDatos()
         {
             RepositorioAeronave = new RepositorioAeronave();
             RepositorioMarca = new RepositorioMarca();
             RepositorioModelo = new RepositorioModelo();
+            RepositorioDespegue = new RepositorioDespegue();
+            RepositorioDespegueAeronave = new RepositorioDespegueAeronave();
         }
 
         public List<Aeronave> RegistrarNuevoIngreso(Ingreso ingreso)
@@ -229,6 +233,125 @@ namespace PortaAviones.Datos
             }
         }
 
+        public Despegue RegistrarDespegue(Despegue despegue)
+        {
+            if (despegue != null && !despegue.Aeronaves.IsNullOrEmpty())
+            {
+                using (TransactionScope tx = new(TransactionScopeOption.RequiresNew))
+                {
+                    SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+                    try
+                    {
+                        connection.Open();
+                        despegue.Codigo = ObtenerCodigoDespegue(connection);
+                        RepositorioDespegue.Guardar(despegue, connection, tx, false);
+                        Despegue nuevoRegistro = RepositorioDespegue.BuscarPorCodigo(despegue.Codigo, connection);
+
+                        despegue.Aeronaves.ForEach(despegueAeronave =>
+                        {
+                            despegueAeronave.DespegueFk = nuevoRegistro.Id;
+                            despegueAeronave.AeronaveFk = despegueAeronave.Aeronave.Id;
+                            RepositorioDespegueAeronave.Guardar(despegueAeronave, connection, tx, false);
+                        });
+
+                        tx.Complete();
+                        return nuevoRegistro;
+                    }
+                    catch (Exception error)
+                    {
+                        Console.WriteLine("Error registrando el nuevo Despegue. Razon: " + error.Message);
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException("El Despegue provisto no es valido");
+            }
+        }
+
+        public Despegue BuscarDespeguePorCodigo(string codigo)
+        {
+            if (!StringUtils.IsEmpty(codigo))
+            {
+                SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+                try
+                {
+                    connection.Open();
+                    Despegue despegue = RepositorioDespegue.BuscarPorCodigo(codigo, connection);
+                    if (despegue != null && despegue.Id != null)
+                    {
+                        List<DespegueAeronave> despegueAeronaves = RepositorioDespegueAeronave.BuscarPorDespegueId(despegue.Id.Value, connection);
+                        despegueAeronaves.ForEach(despegueAeronave =>
+                        {
+                            Aeronave aeronave = RepositorioAeronave.BuscarPorId(despegueAeronave.AeronaveFk.Value, connection);
+                            despegueAeronave.Aeronave = aeronave;
+                        });
+                    }
+
+                    return despegue ?? new();
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Error buscando Despegue por codigo. Razon: " + error.Message);
+                    throw;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+            else
+            {
+                throw new ArgumentException("El codigo provisto es invalido");
+            }
+        }
+
+        private static string ObtenerAnnioSqlServer(SqlConnection sqlConnection)
+        {
+            string selectStmt = "SELECT YEAR(GETDATE())";
+            SqlCommand select = new(selectStmt, sqlConnection);
+            SqlDataReader sqlDataReader = select.ExecuteReader();
+
+            try
+            {
+                sqlDataReader.Read();
+                int annio = sqlDataReader.GetInt32(0);
+                return annio.ToString();
+            }
+            finally
+            {
+                sqlDataReader.Close();
+            }
+        }
+
+        private string ObtenerCodigoDespegue(SqlConnection connection)
+        {
+            int secuencia = RepositorioDespegue.ObtenerSiguienteIdentificador(connection);
+            string secuenciaCodigo = secuencia.ToString();
+            string annioSqlServer = ObtenerAnnioSqlServer(connection);
+
+            if (secuenciaCodigo.Length < 6)
+            {
+                int cuentaRelleno = 6 - secuenciaCodigo.Length;
+                string relleno = "";
+                for (int pos = 1; pos < cuentaRelleno; pos++)
+                {
+                    relleno += "0";
+                }
+
+                secuenciaCodigo = relleno + secuenciaCodigo;
+            }
+
+            return annioSqlServer + "DE" + secuenciaCodigo;
+        }
+
         private Aeronave BuscarAeronaveActivaPorSerie(string serie, SqlConnection connection)
         {
             Aeronave aeronave = RepositorioAeronave.BuscarActivaPorSerie(serie, connection);
@@ -241,7 +364,6 @@ namespace PortaAviones.Datos
 
             return aeronave;
         }
-
     }
 }
 

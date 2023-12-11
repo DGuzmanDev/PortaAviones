@@ -6,6 +6,8 @@ namespace PortaAviones.Interfaces
 {
     public interface IRepositorioAeronave
     {
+        Aeronave BuscarPorId(int id, SqlConnection sqlConnection);
+
         Aeronave BuscarActivaPorSerie(string serie, SqlConnection sqlConnection);
 
         List<ModeloAeronaveAgrupado> ContarModelos(SqlConnection sqlConnection, bool retirado);

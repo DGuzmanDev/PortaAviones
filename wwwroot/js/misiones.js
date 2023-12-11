@@ -8,48 +8,6 @@ var registro_despegue = {
 };
 var registro_aterrizaje = {};
 
-// TEMP
-const despegues = [
-    {
-        id: 1,
-        codigo: "2023DE00001",
-        tecnico: "El nombre del tecnico 1",
-        nombre: "El nombre de la mision 1",
-        fecha: '2023-12-01T00:00',
-        aeronaves: [
-            {
-                aeronave: inventario[0],
-                piloto: "El nombre del piloto 0"
-            }, {
-                aeronave: inventario[3],
-                piloto: "El nombre del piloto 1"
-            }, {
-                aeronave: inventario[5],
-                piloto: "El nombre del piloto 2"
-            }
-        ]
-    },
-    {
-        id: 2,
-        nombre: "El despegue 2",
-        codigo: "2023DE00002",
-        tecnico: "El nombre del tecnico 2",
-        nombre: "El nombre de la mision 2",
-        fecha: '2023-12-01T00:00',
-        aeronaves: [
-            {
-                aeronave: inventario[0],
-                piloto: "El nombre del piloto 3"
-            }, {
-                aeronave: inventario[3],
-                piloto: "El nombre del piloto 4"
-            }, {
-                aeronave: inventario[5],
-                piloto: "El nombre del piloto 5"
-            }
-        ]
-    }];
-
 function ocultar_resultados_busqueda_aeronave(hide_duration) {
     $('#resultados_despegue').hide(hide_duration);
     $('#accion_despegue').hide(hide_duration);
@@ -175,9 +133,9 @@ function agregar_aeronave_despegue(aeronave_despegue) {
     var indice = registro_despegue.aeronaves.length - 1;
 
     var tr = '<tr id="aeronave-despegue-' + indice + '">'
-        + '<td>' + aeronave_despegue.marca + '</td>'
-        + '<td>' + aeronave_despegue.modelo + '</td>'
-        + '<td>' + aeronave_despegue.serie + '</td>'
+        + '<td>' + aeronave_despegue.aeronave.marca.nombre + '</td>'
+        + '<td>' + aeronave_despegue.aeronave.modelo.nombre + '</td>'
+        + '<td>' + aeronave_despegue.aeronave.serie + '</td>'
         + '<td>' + aeronave_despegue.piloto + '</td>'
         + '<td><div class="d-flex justify-content-center">'
         + '<button id="aeronave-' + indice + '" type="button" class="btn btn-danger ms-2">'
@@ -201,8 +159,13 @@ function configurar_boton_agregar_aeronave_despegue(aeronave) {
             $(formPiloto).addClass('was-validated');
 
             if (formPiloto.checkValidity() && piloto !== undefined && piloto.trim() !== '') {
+                var despegue_aeronave = {
+                    aeronave: aeronave,
+                    piloto: piloto,
+                    aeronaveFk: aeronave.id
+                }
                 aeronave.piloto = piloto.trim();
-                agregar_aeronave_despegue(aeronave);
+                agregar_aeronave_despegue(despegue_aeronave);
                 ocultar_resultados_busqueda_aeronave(500);
                 $(formPiloto).removeClass('was-validated');
                 formPiloto.reset();
@@ -213,15 +176,30 @@ function configurar_boton_agregar_aeronave_despegue(aeronave) {
     });
 }
 
-function cargar_resultados_aeronave() {
-    // TODO:Enviar el request al BE para encontrar toda la informacion de la aeronave
-    var aeronave = inventario[0];
-    $('#Serie_Info').val(aeronave.serie);
-    $('#Nombre_Info').val(aeronave.nombre);
-    $('#Marca_Info').val(aeronave.marca);
-    $('#Modelo_Info').val(aeronave.modelo);
-    configurar_boton_agregar_aeronave_despegue(aeronave);
-    mostrar_resultados_busqueda_aeronave(500);
+function cargar_resultados_aeronave(serie) {
+    $.ajax({
+        type: "GET",
+        url: "/api/Aeronaves/buscar/serie/" + encodeURIComponent(serie),
+        success: function (aeronave, status) {
+            if (aeronave !== undefined && aeronave.id !== undefined && aeronave.id != null) {
+                $('#Serie_Info').val(aeronave.serie);
+                $('#Nombre_Info').val(aeronave.nombre);
+                $('#Marca_Info').val(aeronave.marca.nombre);
+                $('#Modelo_Info').val(aeronave.modelo.nombre);
+                configurar_boton_agregar_aeronave_despegue(aeronave);
+                mostrar_resultados_busqueda_aeronave(500);
+            } else {
+                animate_feedback('error_no_records', 3000, 500, 500)
+            }
+        },
+        error: function (data, status) {
+            window.location.replace("/Home/Error?errorMessage=" +
+                encodeURIComponent(data.responseText) + "&httpError=" +
+                encodeURIComponent(data.status + " " + data.statusText));
+        },
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+    });
 }
 
 function registrar_evento_buscar_aeronave() {
@@ -232,8 +210,8 @@ function registrar_evento_buscar_aeronave() {
         var formAeronave = $('#formulario_busqueda_aeronave')[0];
         $(formAeronave).addClass('was-validated');
 
-        if (formAeronave.checkValidity() && serie !== undefined && serie.trim() !== '') {
-            cargar_resultados_aeronave();
+        if (formAeronave.checkValidity() && serie !== undefined && serie.trim() !== "") {
+            cargar_resultados_aeronave(serie);
             $(formAeronave).removeClass('was-validated');
             formAeronave.reset();
         } else {
@@ -252,6 +230,26 @@ function validar_datos_despegue() {
         && (fecha !== undefined && fecha.trim() !== ''));
 }
 
+function post_despegue(despegue) {
+    $.ajax({
+        type: "POST",
+        url: "/api/Despegue/guardar",
+        data: JSON.stringify(despegue),
+        success: function (data, status) {
+            limpiar_despegue();
+            $('#exito_registro_despegue_msg').html('El registro del despegue ' + data.codigo + ' se ha completado con éxito');
+            animate_feedback('exito_registro_despegue_msg', 5000, 500, 500);
+        },
+        error: function (data, status) {
+            window.location.replace("/Home/Error?errorMessage=" +
+                encodeURIComponent(data.responseText) + "&httpError=" +
+                encodeURIComponent(data.status + " " + data.statusText));
+        },
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+    });
+}
+
 function registrar_evento_guardar_despegue() {
     $('#enviar_despegue').on('click', function (event) {
         var formDespegue = $('#formulario_despegue')[0];
@@ -259,11 +257,10 @@ function registrar_evento_guardar_despegue() {
 
         if (formDespegue.checkValidity() && validar_datos_despegue()) {
             if (registro_despegue.aeronaves.length > 0) {
-                // TODO: Enviar el request al back-end con el modelo despegue y obtener el codigo del despegue
-                limpiar_despegue();
-                $('#exito_registro_despegue_msg').html('El registro del despegue 2023DE00001 se ha completado con éxito');
-                animate_feedback('exito_registro_despegue_msg', 5000, 500, 500);
-
+                registro_despegue.tecnico = $('#Tecnico').val();
+                registro_despegue.mision = $('#Mision').val();
+                registro_despegue.fechaDespegue = $('#FechaDespegue').val();
+                post_despegue(registro_despegue);
             } else {
                 animate_feedback('error_aeronaves_despegue', 5000, 500, 500);
             }

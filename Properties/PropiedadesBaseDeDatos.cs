@@ -15,6 +15,8 @@ namespace GestionHerramientas.Properties
         public static readonly string _TablaAeronave = "aeronave";
         public static readonly string _TablaMarca = "marca";
         public static readonly string _TablaModelo = "modelo";
+        public static readonly string _TablaDespegue = "despegue";
+         public static readonly string _TablaAeornavesDespegue = "aeronaves_despegue";
 
         public static string ObtenerStringDeConexion()
         {
@@ -55,6 +57,25 @@ namespace GestionHerramientas.Properties
             public static readonly string _ColumnaId = "id";
             public static readonly string _ColumnaNombre = "nombre";
             public static readonly string _ColumnaMarcaFk = "marca_fk";
+        }
+
+        public static class Despegue
+        {
+            public static readonly string _ColumnaId = "id";
+            public static readonly string _ColumnaCodigo = "codigo";
+            public static readonly string _ColumnaTecnico = "tecnico";
+            public static readonly string _ColumnaMision = "mision";
+            public static readonly string _ColumnaFechaDespegue = "fecha_despegue";
+            public static readonly string _ColumnaFechaRegistro = "fecha_registro";
+            public static readonly string _SecuenciaCodigo = "secuencia_despegues";
+        }
+
+        public static class AeronavesDespegue
+        {
+            public static readonly string _ColumnaId = "id";
+            public static readonly string _ColumnaPiloto = "piloto";
+            public static readonly string _ColumnaDespegueFk = "despegue_fk";
+            public static readonly string _ColumnaAeronaveFk = "aeronave_fk";
         }
     }
 }

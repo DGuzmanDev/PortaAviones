@@ -13,6 +13,11 @@ namespace PortaAviones.Datos.Repositorio
     public class RepositorioAeronave : IRepositorioAeronave
     {
 
+        private static readonly string SELECT_AERONAVE_POR_ID = "SELECT * FROM " + PropiedadesBD._BaseDeDatos + "."
+                    + PropiedadesBD._Esquema + "."
+                    + PropiedadesBD._TablaAeronave
+                    + " WHERE " + PropiedadesBD.Aeronave._ColumnaId + " = @id";
+
         private static readonly string SELECT_AERONAVE_POR_SERIE = "SELECT * FROM " + PropiedadesBD._BaseDeDatos + "."
                     + PropiedadesBD._Esquema + "."
                     + PropiedadesBD._TablaAeronave
@@ -61,6 +66,31 @@ namespace PortaAviones.Datos.Repositorio
                     + PropiedadesBD.Aeronave._ColumnaRazonRetiro + " = @razon,"
                     + PropiedadesBD.Aeronave._ColumnaFechaActualizacion + " = @fechaActualizacion "
                     + "WHERE " + PropiedadesBD.Aeronave._ColumnaId + " = @id";
+
+
+        public Aeronave BuscarPorId(int id, SqlConnection sqlConnection)
+        {
+            if (id > 0)
+            {
+                SqlCommand select = new(SELECT_AERONAVE_POR_SERIE, sqlConnection);
+                select.Parameters.Add("@id", SqlDbType.Int).Value = id;
+
+                SqlDataReader sqlDataReader = select.ExecuteReader();
+                Aeronave aeronave = new();
+                if (sqlDataReader.HasRows)
+                {
+                    sqlDataReader.Read();
+                    aeronave = LeerRegistro(sqlDataReader);
+                }
+
+                sqlDataReader.Close();
+                return aeronave;
+            }
+            else
+            {
+                throw new ArgumentException("El ID dado es invalido");
+            }
+        }
 
         public Aeronave BuscarActivaPorSerie(string serie, SqlConnection sqlConnection)
         {
