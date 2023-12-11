@@ -19,5 +19,9 @@ namespace PortaAviones.Interfaces
         List<ModeloAeronaveAgrupado> ContarAeronavesAgrupadasPorModelo();
 
         Aeronave BuscarAeronaveActivaPorSerie(string serie);
+
+        Despegue RegistrarDespegue(Despegue despegue);
+
+        Despegue BuscarDespeguePorCodigo(string codigo);
     }
 }
