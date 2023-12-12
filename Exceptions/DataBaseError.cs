@@ -1,4 +1,4 @@
-namespace GestionHerramientas.Exceptions
+namespace PortaAviones.Exceptions
 {
     [Serializable]
     public class DataBaseError : Exception

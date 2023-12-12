@@ -1,5 +1,5 @@
 using System.Data;
-using GestionHerramientas.Properties;
+using PortaAviones.Properties;
 using Microsoft.Data.SqlClient;
 using PortaAviones.Interfaces;
 using PortaAviones.Models;

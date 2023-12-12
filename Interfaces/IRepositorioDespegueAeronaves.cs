@@ -4,10 +4,10 @@ using PortaAviones.Models;
 
 namespace PortaAviones.Interfaces
 {
-    public interface IRepositorioDespegueAeronave
+    public interface IRepositorioAeronaveDespegue
     {
-        void Guardar(DespegueAeronave despegueAeronave, SqlConnection sqlConnection, TransactionScope txScope, bool txCommit);
+        void Guardar(AeronaveDespegue despegueAeronave, SqlConnection sqlConnection, TransactionScope txScope, bool txCommit);
 
-        List<DespegueAeronave> BuscarPorDespegueId(int despegueId, SqlConnection sqlConnection);
+        List<AeronaveDespegue> BuscarPorDespegueId(int despegueId, SqlConnection sqlConnection);
     }
 }

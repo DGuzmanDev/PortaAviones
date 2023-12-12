@@ -1,14 +1,14 @@
 using System.Data;
 using System.Transactions;
-using GestionHerramientas.Exceptions;
-using GestionHerramientas.Properties;
+using PortaAviones.Exceptions;
+using PortaAviones.Properties;
 using Microsoft.Data.SqlClient;
 using PortaAviones.Models;
 using PortaAviones.Util;
 
 namespace PortaAviones.Interfaces
 {
-    public class RepositorioDespegueAeronave : IRepositorioDespegueAeronave
+    public class RepositorioAeronaveDespegue : IRepositorioAeronaveDespegue
     {
 
         public static readonly string INSERT_DESPEGUE_AERONAVE =
@@ -24,7 +24,7 @@ namespace PortaAviones.Interfaces
                 + PropiedadesBD._TablaAeornavesDespegue
                 + " WHERE " + PropiedadesBD.AeronavesDespegue._ColumnaDespegueFk + " = @despegueId";
 
-        public List<DespegueAeronave> BuscarPorDespegueId(int despegueId, SqlConnection sqlConnection)
+        public List<AeronaveDespegue> BuscarPorDespegueId(int despegueId, SqlConnection sqlConnection)
         {
             if (despegueId > 0)
             {
@@ -32,7 +32,7 @@ namespace PortaAviones.Interfaces
                 select.Parameters.Add("@despegueId", SqlDbType.Int).Value = despegueId;
 
                 SqlDataReader sqlDataReader = select.ExecuteReader();
-                List<DespegueAeronave> despegueAeronave = new();
+                List<AeronaveDespegue> despegueAeronave = new();
                 while (sqlDataReader.Read())
                 {
                     despegueAeronave.Add(LeerRegistro(sqlDataReader));
@@ -47,7 +47,7 @@ namespace PortaAviones.Interfaces
             }
         }
 
-        public void Guardar(DespegueAeronave despegueAeronave, SqlConnection sqlConnection,
+        public void Guardar(AeronaveDespegue despegueAeronave, SqlConnection sqlConnection,
             TransactionScope txScope, bool txCommit)
         {
             if (despegueAeronave != null)
@@ -75,7 +75,7 @@ namespace PortaAviones.Interfaces
             }
         }
 
-        private static DespegueAeronave LeerRegistro(SqlDataReader sqlDataReader)
+        private static AeronaveDespegue LeerRegistro(SqlDataReader sqlDataReader)
         {
             int? id = (int)sqlDataReader[PropiedadesBD.AeronavesDespegue._ColumnaId];
             int? aeronaveFk = (int)sqlDataReader[PropiedadesBD.AeronavesDespegue._ColumnaAeronaveFk];
