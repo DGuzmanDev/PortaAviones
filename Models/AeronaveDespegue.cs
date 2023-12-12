@@ -1,6 +1,6 @@
 namespace PortaAviones.Models
 {
-    public class DespegueAeronave
+    public class AeronaveDespegue
     {
         public int? Id { get; set; }
         public int? DespegueFk { get; set; }
@@ -9,9 +9,9 @@ namespace PortaAviones.Models
 
         public Aeronave? Aeronave { get; set; }
 
-        public DespegueAeronave() { }
+        public AeronaveDespegue() { }
 
-        public DespegueAeronave(int? id, int? despegue_fk, int? aeronave_fk, string? piloto)
+        public AeronaveDespegue(int? id, int? despegue_fk, int? aeronave_fk, string? piloto)
         {
             Id = id;
             DespegueFk = despegue_fk;

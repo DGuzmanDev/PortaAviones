@@ -1,7 +1,7 @@
 using System.Data;
 using System.Transactions;
-using GestionHerramientas.Exceptions;
-using GestionHerramientas.Properties;
+using PortaAviones.Exceptions;
+using PortaAviones.Properties;
 using Microsoft.Data.SqlClient;
 using PortaAviones.Interfaces;
 using PortaAviones.Models;
@@ -13,6 +13,10 @@ namespace PortaAviones.Datos.Repositorio
     {
         public static readonly string SELECT_SIGUIENTE_SECUENCIA =
                 "SELECT NEXT VALUE FOR PortaAviones." + PropiedadesBD.Despegue._SecuenciaCodigo;
+
+        public static readonly string SELECT_TODOS =
+                "SELECT * FROM " + PropiedadesBD._BaseDeDatos + "." + PropiedadesBD._Esquema + "."
+                + PropiedadesBD._TablaDespegue;
 
         public static readonly string SELECT_POR_CODIGO =
                 "SELECT * FROM " + PropiedadesBD._BaseDeDatos + "." + PropiedadesBD._Esquema + "."
@@ -112,6 +116,21 @@ namespace PortaAviones.Datos.Repositorio
             DateTime fechaRegistro = (DateTime)sqlDataReader[PropiedadesBD.Despegue._ColumnaFechaRegistro];
             DateTime fechaDespegue = (DateTime)sqlDataReader[PropiedadesBD.Despegue._ColumnaFechaDespegue];
             return new(id, codigo, tecnico, mision, fechaDespegue, fechaRegistro, null);
+        }
+
+        public List<Despegue> BuscarTodos(SqlConnection sqlConnection)
+        {
+            SqlCommand select = new(SELECT_TODOS, sqlConnection);
+
+            SqlDataReader sqlDataReader = select.ExecuteReader();
+            List<Despegue> despegues = new();
+            while (sqlDataReader.Read())
+            {
+                despegues.Add(LeerRegistro(sqlDataReader));
+            }
+
+            sqlDataReader.Close();
+            return despegues;
         }
     }
 }

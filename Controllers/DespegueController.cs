@@ -1,4 +1,4 @@
-using GestionHerramientas.Controllers;
+using PortaAviones.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using PortaAviones.Interfaces;
 using PortaAviones.Models;
@@ -69,6 +69,22 @@ namespace PortaAviones.Controllers
             }
 
             return respuesta;
+        }
+
+        [HttpGet]
+        [Route("buscar")]
+        public List<Despegue> BuscarTodos()
+        {
+            List<Despegue> despegues = new();
+            try
+            {
+                despegues = ServicioDespegue.BuscarTodos();
+            }
+            catch (Exception error)
+            {
+                TopLevelErrorHandler.ManejarError(error, nameof(DespegueController), nameof(BuscarTodos), _logger);
+            }
+            return despegues;
         }
     }
 }

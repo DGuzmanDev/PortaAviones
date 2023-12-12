@@ -1,5 +1,5 @@
 ﻿
-namespace GestionHerramientas.Properties
+namespace PortaAviones.Properties
 {
     public class PropiedadesBD
     {
@@ -16,7 +16,9 @@ namespace GestionHerramientas.Properties
         public static readonly string _TablaMarca = "marca";
         public static readonly string _TablaModelo = "modelo";
         public static readonly string _TablaDespegue = "despegue";
-         public static readonly string _TablaAeornavesDespegue = "aeronaves_despegue";
+        public static readonly string _TablaAeornavesDespegue = "aeronaves_despegue";
+        public static readonly string _TablaAterrizaje = "aterrizaje";
+        public static readonly string _TablaAeornavesAterrizaje = "aeronaves_aterrizaje";
 
         public static string ObtenerStringDeConexion()
         {
@@ -40,8 +42,6 @@ namespace GestionHerramientas.Properties
             public static readonly string _ColumnaTecnicoIngreso = "tecnico_ingreso";
             public static readonly string _ColumnaTecnicoRetiro = "tecnico_retiro";
             public static readonly string _ColumnaRazonRetiro = "razon_retiro";
-            public static readonly string _ColumnaPerdidaMaterial = "perdida_material";
-            public static readonly string _ColumnaPerdidaHumana = "perdida_humana";
             public static readonly string _ColumnaFechaRegistro = "fecha_registro";
             public static readonly string _ColumnaFechaActualizacion = "fecha_actualizacion";
         }
@@ -76,6 +76,23 @@ namespace GestionHerramientas.Properties
             public static readonly string _ColumnaPiloto = "piloto";
             public static readonly string _ColumnaDespegueFk = "despegue_fk";
             public static readonly string _ColumnaAeronaveFk = "aeronave_fk";
+        }
+
+        public static class Aterrizaje
+        {
+            public static readonly string _ColumnaId = "id";
+            public static readonly string _ColumnaDespegueFk = "despegue_fk";
+            public static readonly string _ColumnaFechaRegistro = "fecha_registro";
+        }
+
+        public static class AeronavesAterrizaje
+        {
+            public static readonly string _ColumnaId = "id";
+            public static readonly string _ColumnAterrizajeFk = "aterrizaje_fk";
+            public static readonly string _ColumnaAeronaveFk = "aeronave_fk";
+            public static readonly string _ColumnaPerdidaMaterial = "perdida_material";
+            public static readonly string _ColumnaPerdidaHumana = "perdida_humana";
+            public static readonly string _ColumnaFechaAterrizaje = "fecha_aterrizaje";
         }
     }
 }

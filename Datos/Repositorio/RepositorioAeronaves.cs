@@ -1,7 +1,7 @@
 using System.Data;
 using System.Transactions;
-using GestionHerramientas.Exceptions;
-using GestionHerramientas.Properties;
+using PortaAviones.Exceptions;
+using PortaAviones.Properties;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using PortaAviones.Interfaces;
@@ -61,8 +61,6 @@ namespace PortaAviones.Datos.Repositorio
                     + PropiedadesBD._TablaAeronave
                     + " SET " + PropiedadesBD.Aeronave._ColumnaRetirado + " = @retirado,"
                     + PropiedadesBD.Aeronave._ColumnaTecnicoRetiro + " = @tecnicoRetiro,"
-                    + PropiedadesBD.Aeronave._ColumnaPerdidaMaterial + " = @perdidaMaterial,"
-                    + PropiedadesBD.Aeronave._ColumnaPerdidaHumana + " = @perdidaHumana,"
                     + PropiedadesBD.Aeronave._ColumnaRazonRetiro + " = @razon,"
                     + PropiedadesBD.Aeronave._ColumnaFechaActualizacion + " = @fechaActualizacion "
                     + "WHERE " + PropiedadesBD.Aeronave._ColumnaId + " = @id";
@@ -72,7 +70,7 @@ namespace PortaAviones.Datos.Repositorio
         {
             if (id > 0)
             {
-                SqlCommand select = new(SELECT_AERONAVE_POR_SERIE, sqlConnection);
+                SqlCommand select = new(SELECT_AERONAVE_POR_ID, sqlConnection);
                 select.Parameters.Add("@id", SqlDbType.Int).Value = id;
 
                 SqlDataReader sqlDataReader = select.ExecuteReader();
@@ -237,8 +235,6 @@ namespace PortaAviones.Datos.Repositorio
             SqlCommand insert = new(UPDATE_AERONAVE, sqlConnection);
             insert.Parameters.Add("@retirado", SqlDbType.Bit).Value = aeronave.Retirado;
             insert.Parameters.Add("@tecnicoRetiro", SqlDbType.VarChar).Value = aeronave.TecnicoRetiro;
-            insert.Parameters.Add("@perdidaMaterial", SqlDbType.Bit).Value = aeronave.PerdidaMaterial;
-            insert.Parameters.Add("@perdidaHumana", SqlDbType.Int).Value = aeronave.PerdidaHumana;
             insert.Parameters.Add("@razon", SqlDbType.VarChar).Value = aeronave.RazonRetiro;
             insert.Parameters.Add("@fechaActualizacion", SqlDbType.DateTime2).Value = DateTime.Now;
             insert.Parameters.Add("@id", SqlDbType.Int).Value = aeronave.Id;
@@ -259,12 +255,10 @@ namespace PortaAviones.Datos.Repositorio
             string? tecnicoRetiro = DBUtil.ConvertFromDBVal<string>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaTecnicoRetiro]);
             string? razonRetiro = DBUtil.ConvertFromDBVal<string>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaRazonRetiro]);
             bool? retirado = DBUtil.ConvertFromDBVal<bool>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaRetirado]);
-            bool? perdidaMaterial = DBUtil.ConvertFromDBVal<bool>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaPerdidaMaterial]);
-            int? perdidaHumana = DBUtil.ConvertFromDBVal<int>(sqlDataReader[PropiedadesBD.Aeronave._ColumnaPerdidaHumana]);
             DateTime fechaRegistro = (DateTime)sqlDataReader[PropiedadesBD.Aeronave._ColumnaFechaRegistro];
             DateTime fechaActualizacion = (DateTime)sqlDataReader[PropiedadesBD.Aeronave._ColumnaFechaActualizacion];
             return new(id, serie, new Marca(marca, null), new Modelo(modelo, null, marca), nombre, decimal.ToDouble(ancho), decimal.ToDouble(alto),
-                decimal.ToDouble(largo), retirado, perdidaMaterial, perdidaHumana, tecnicoIngreso, tecnicoRetiro, razonRetiro, fechaRegistro, fechaActualizacion);
+                decimal.ToDouble(largo), retirado, tecnicoIngreso, tecnicoRetiro, razonRetiro, fechaRegistro, fechaActualizacion);
         }
 
         private static ModeloAeronaveAgrupado LeerRegistroModelo(SqlDataReader sqlDataReader)

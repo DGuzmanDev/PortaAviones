@@ -7,13 +7,13 @@ namespace PortaAviones.Models
         public string? Tecnico { get; set; }
         public string? Mision { get; set; }
         public DateTime? FechaDespegue { get; set; }
-        public List<DespegueAeronave>? Aeronaves { get; set; }
+        public List<AeronaveDespegue>? Aeronaves { get; set; }
         public DateTime? FechaRegistro { get; set; }
 
         public Despegue() { }
 
         public Despegue(int? id, string? codigo, string? tecnico, string? mision, DateTime? fechaDespegue,
-         DateTime? fechaRegistro, List<DespegueAeronave>? aeronaves)
+         DateTime? fechaRegistro, List<AeronaveDespegue>? aeronaves)
         {
             Id = id;
             Codigo = codigo;

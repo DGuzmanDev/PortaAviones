@@ -11,5 +11,7 @@ namespace PortaAviones.Interfaces
         int ObtenerSiguienteIdentificador(SqlConnection sqlConnection);
 
         Despegue BuscarPorCodigo(string codigo, SqlConnection sqlConnection);
+
+        List<Despegue> BuscarTodos(SqlConnection sqlConnection);
     }
 }

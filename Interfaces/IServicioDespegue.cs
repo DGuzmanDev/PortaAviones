@@ -7,5 +7,7 @@ namespace PortaAviones.Interfaces
         Despegue Guardar(Despegue despegue);
 
         Despegue BuscarPorCodigo(string codigo);
+
+        List<Despegue> BuscarTodos();
     }
 }

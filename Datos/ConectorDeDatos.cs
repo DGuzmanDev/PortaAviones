@@ -1,6 +1,6 @@
 ﻿using System.Transactions;
-using GestionHerramientas.Datos;
-using GestionHerramientas.Exceptions;
+using PortaAviones.Datos;
+using PortaAviones.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using PortaAviones.Datos.Repositorio;
@@ -19,7 +19,9 @@ namespace PortaAviones.Datos
         private readonly IRepositorioModelo RepositorioModelo;
         private readonly IRepositorioAeronave RepositorioAeronave;
         private readonly IRepositorioDespegue RepositorioDespegue;
-        private readonly IRepositorioDespegueAeronave RepositorioDespegueAeronave;
+        private readonly IRepositorioAterrizaje RepositorioAterrizaje;
+        private readonly IRepositorioAeronaveDespegue RepositorioDespegueAeronave;
+        private readonly IRepositorioAeronaveAterrizaje RepositorioAeronaveAterrizaje;
 
         public ConectorDeDatos()
         {
@@ -27,7 +29,9 @@ namespace PortaAviones.Datos
             RepositorioMarca = new RepositorioMarca();
             RepositorioModelo = new RepositorioModelo();
             RepositorioDespegue = new RepositorioDespegue();
-            RepositorioDespegueAeronave = new RepositorioDespegueAeronave();
+            RepositorioDespegueAeronave = new RepositorioAeronaveDespegue();
+            RepositorioAterrizaje = new RepositorioAterrizaje();
+            RepositorioAeronaveAterrizaje = new RepositorioAeronaveAterrizaje();
         }
 
         public List<Aeronave> RegistrarNuevoIngreso(Ingreso ingreso)
@@ -288,12 +292,15 @@ namespace PortaAviones.Datos
                     Despegue despegue = RepositorioDespegue.BuscarPorCodigo(codigo, connection);
                     if (despegue != null && despegue.Id != null)
                     {
-                        List<DespegueAeronave> despegueAeronaves = RepositorioDespegueAeronave.BuscarPorDespegueId(despegue.Id.Value, connection);
+                        List<AeronaveDespegue> despegueAeronaves = RepositorioDespegueAeronave.BuscarPorDespegueId(despegue.Id.Value, connection);
                         despegueAeronaves.ForEach(despegueAeronave =>
                         {
                             Aeronave aeronave = RepositorioAeronave.BuscarPorId(despegueAeronave.AeronaveFk.Value, connection);
+                            aeronave.Marca = RepositorioMarca.BuscarPorId(aeronave.Marca.Id.Value, connection);
+                            aeronave.Modelo = RepositorioModelo.BuscarPorId(aeronave.Modelo.Id.Value, connection);
                             despegueAeronave.Aeronave = aeronave;
                         });
+                        despegue.Aeronaves = despegueAeronaves;
                     }
 
                     return despegue ?? new();
@@ -311,6 +318,26 @@ namespace PortaAviones.Datos
             else
             {
                 throw new ArgumentException("El codigo provisto es invalido");
+            }
+        }
+
+        public List<Despegue> BuscarDespegues()
+        {
+
+            SqlConnection sqlConnection = ConexionSQLServer.ObenerConexion();
+            try
+            {
+                sqlConnection.Open();
+                return RepositorioDespegue.BuscarTodos(sqlConnection);
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine("Error buscando todos los Despegues. Razon: " + error.Message);
+                throw;
+            }
+            finally
+            {
+                sqlConnection.Close();
             }
         }
 
@@ -363,6 +390,47 @@ namespace PortaAviones.Datos
             }
 
             return aeronave;
+        }
+
+        public Aterrizaje RegistrarAterrizaje(Aterrizaje aterrizaje)
+        {
+            if (aterrizaje != null && !aterrizaje.Aeronaves.IsNullOrEmpty())
+            {
+                using (TransactionScope tx = new(TransactionScopeOption.RequiresNew))
+                {
+                    SqlConnection connection = ConexionSQLServer.ObenerConexion();
+
+                    try
+                    {
+                        connection.Open();
+                        RepositorioAterrizaje.Guardar(aterrizaje, connection);
+                        Aterrizaje nuevoRegistro = RepositorioAterrizaje.BuscarPorDespegueId(aterrizaje.Despegue.Id.Value, connection);
+
+                        aterrizaje.Aeronaves.ForEach(aeronaveAterrizaje =>
+                        {
+                            aeronaveAterrizaje.AterrizajeFk = nuevoRegistro.Id;
+                            aeronaveAterrizaje.AeronaveFk = aeronaveAterrizaje.Aeronave.Id;
+                            RepositorioAeronaveAterrizaje.Guardar(aeronaveAterrizaje, connection);
+                        });
+
+                        tx.Complete();
+                        return nuevoRegistro;
+                    }
+                    catch (Exception error)
+                    {
+                        Console.WriteLine("Error registrando el nuevo Despegue. Razon: " + error.Message);
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException("El Aterrizaje provisto no es valido");
+            }
         }
     }
 }

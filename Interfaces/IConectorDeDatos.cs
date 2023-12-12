@@ -23,5 +23,9 @@ namespace PortaAviones.Interfaces
         Despegue RegistrarDespegue(Despegue despegue);
 
         Despegue BuscarDespeguePorCodigo(string codigo);
+
+        List<Despegue> BuscarDespegues();
+
+        Aterrizaje RegistrarAterrizaje(Aterrizaje aterrizaje);
     }
 }

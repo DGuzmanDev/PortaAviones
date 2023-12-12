@@ -1,7 +1,7 @@
-﻿using GestionHerramientas.Properties;
+﻿using PortaAviones.Properties;
 using Microsoft.Data.SqlClient;
 
-namespace GestionHerramientas.Datos
+namespace PortaAviones.Datos
 {
     public class ConexionSQLServer
     {

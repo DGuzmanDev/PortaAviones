@@ -11,8 +11,6 @@ namespace PortaAviones.Models
         public double? Alto { get; set; }
         public double? Largo { get; set; }
         public bool? Retirado { get; set; }
-        public bool? PerdidaMaterial { get; set; }
-        public int? PerdidaHumana { get; set; }
         public string? TecnicoIngreso { get; set; }
         public string? TecnicoRetiro { get; set; }
         public string? RazonRetiro { get; set; }
@@ -31,8 +29,8 @@ namespace PortaAviones.Models
         }
 
         public Aeronave(int? id, string? serie, Marca? marca, Modelo? modelo, string? nombre, double? ancho,
-            double? alto, double? largo, bool? retirado, bool? perdidaMaterial, int? perdidaHumana,
-            string? tecnicoIngreso, string? tecnicoRetiro, string? razonRetiro, DateTime? fechaRegistro, DateTime? fechaActualizacion)
+            double? alto, double? largo, bool? retirado, string? tecnicoIngreso, string? tecnicoRetiro,
+            string? razonRetiro, DateTime? fechaRegistro, DateTime? fechaActualizacion)
         {
             Id = id;
             Serie = serie;
@@ -43,8 +41,6 @@ namespace PortaAviones.Models
             Alto = alto;
             Largo = largo;
             Retirado = retirado;
-            PerdidaMaterial = perdidaMaterial;
-            PerdidaHumana = perdidaHumana;
             TecnicoIngreso = tecnicoIngreso;
             TecnicoRetiro = tecnicoRetiro;
             RazonRetiro = razonRetiro;

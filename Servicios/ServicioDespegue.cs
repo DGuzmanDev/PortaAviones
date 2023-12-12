@@ -54,5 +54,18 @@ namespace PortaAviones.Servicios
                 throw new ArgumentException("El Despegue provisto es invalido");
             }
         }
+
+        public List<Despegue> BuscarTodos()
+        {
+            try
+            {
+                return ConectorDeDatos.BuscarDespegues();
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine("Error buscando todos los despegues. Razon: " + error.Message);
+                throw;
+            };
+        }
     }
 }
