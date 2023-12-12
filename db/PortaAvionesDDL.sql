@@ -19,13 +19,6 @@ GRANT CONTROL ON DATABASE::PortaAviones TO Dguzman;
 
 CREATE SCHEMA PortaAviones AUTHORIZATION Dguzman GRANT CONTROL ON SCHEMA::PortaAviones TO Dguzman;
 
-CREATE TABLE PortaAviones.PortaAviones.marca(
-    id int IDENTITY (1, 1) NOT NULL,
-    nombre varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    CONSTRAINT marca_PK PRIMARY KEY (id),
-    CONSTRAINT marca_nombre_UN UNIQUE (nombre)
-);
-
 CREATE TABLE PortaAviones.PortaAviones.despegue(
     codigo varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
     id int IDENTITY (1, 1) NOT NULL,
@@ -35,6 +28,22 @@ CREATE TABLE PortaAviones.PortaAviones.despegue(
     fecha_despegue datetime2(0) NOT NULL,
     CONSTRAINT despegue_PK PRIMARY KEY (id),
     CONSTRAINT despegue_UN UNIQUE (codigo)
+);
+
+CREATE TABLE PortaAviones.PortaAviones.marca(
+    id int IDENTITY (1, 1) NOT NULL,
+    nombre varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    CONSTRAINT marca_PK PRIMARY KEY (id),
+    CONSTRAINT marca_nombre_UN UNIQUE (nombre)
+);
+
+CREATE TABLE PortaAviones.PortaAviones.aterrizaje(
+    id int IDENTITY (1, 1) NOT NULL,
+    fecha_registro datetime2(0) DEFAULT getdate() NOT NULL,
+    despegue_fk int NOT NULL,
+    CONSTRAINT aterrizaje_PK PRIMARY KEY (id),
+    CONSTRAINT aterrizaje_UN UNIQUE (despegue_fk),
+    CONSTRAINT aterrizaje_despegue_FK FOREIGN KEY (despegue_fk) REFERENCES PortaAviones.PortaAviones.despegue(id)
 );
 
 CREATE TABLE PortaAviones.PortaAviones.modelo(
@@ -60,13 +69,23 @@ CREATE TABLE PortaAviones.PortaAviones.aeronave(
     retirado bit DEFAULT 0 NOT NULL,
     tecnico_ingreso varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
     tecnico_retiro varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-    perdida_material bit DEFAULT 0 NOT NULL,
-    perdida_humana int NULL,
     razon_retiro varchar(500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
     CONSTRAINT aeronave_PK PRIMARY KEY (id),
     CONSTRAINT aeronave_serie_UN UNIQUE (serie),
     CONSTRAINT aeronave_marca_FK FOREIGN KEY (marca_fk) REFERENCES PortaAviones.PortaAviones.marca(id),
     CONSTRAINT modelo_FK FOREIGN KEY (modelo_fk) REFERENCES PortaAviones.PortaAviones.modelo(id)
+);
+
+CREATE TABLE PortaAviones.PortaAviones.aeronaves_aterrizaje(
+    id int IDENTITY (1, 1) NOT NULL,
+    aterrizaje_fk int NOT NULL,
+    aeronave_fk int NOT NULL,
+    fecha_aterrizaje datetime2(0) NOT NULL,
+    perdida_material bit NOT NULL,
+    perdida_humana int NULL,
+    CONSTRAINT aeronavez_aterrizaje_PK PRIMARY KEY (id),
+    CONSTRAINT aeronaves_aterrizaje_AeronaveFK FOREIGN KEY (aterrizaje_fk) REFERENCES PortaAviones.PortaAviones.aterrizaje(id),
+    CONSTRAINT aeronaves_aterrizaje_AterrizajeFK FOREIGN KEY (aeronave_fk) REFERENCES PortaAviones.PortaAviones.aeronave(id)
 );
 
 CREATE TABLE PortaAviones.PortaAviones.aeronaves_despegue(
